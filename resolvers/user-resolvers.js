@@ -28,6 +28,19 @@ module.exports = {
 			res.cookie('access-token', accessToken, { httpOnly: true , sameSite: 'None', secure: true}); 
 			return user;
 		},
+		update: async(_, args, { res }) => {
+			const { _id, email, password, firstName, lastName } = args;
+			const hashed = await bcrypt.hash(password, 10);
+			const user = new User({
+				_id: _id,
+				firstName: firstName,
+				lastName: lastName,
+				email: email, 
+				password: hashed,
+			})
+			const replaced = await User.replaceOne({ _id: _id }, user );
+			return replaced;
+		},
 		register: async (_, args, { res }) => {
 			const { email, password, firstName, lastName } = args;
 			const alreadyRegistered = await User.findOne({email: email});
@@ -38,8 +51,7 @@ module.exports = {
 					firstName: '',
 					lastName: '',
 					email: 'already exists', 
-					password: '',
-					initials: ''}));
+					password: ''}));
 			}
 			const hashed = await bcrypt.hash(password, 10);
 			const _id = new ObjectId();
@@ -49,7 +61,7 @@ module.exports = {
 				lastName: lastName,
 				email: email, 
 				password: hashed,
-				initials: `${firstName[0]}.${lastName[0]}.`
+				// initials: `${firstName[0]}.${lastName[0]}.`
 			})
 			const saved = await user.save();
 			// After registering the user, their tokens are generated here so they

@@ -7,3 +7,54 @@ html {
 }
 
 /* ----------------------------- Top-Level Setup ---------------------------- */
+.logo {
+    text-align: center;
+}
+
+.modal-input {
+    width: 100%;
+}
+
+.login-modal {
+    width: 350px;
+}
+
+.signup-modal {
+    width: 375px;
+}
+
+.update-modal {
+    width: 400px;
+}
+
+.modal-col-gap{
+    column-gap: 24px;
+}
+
+.modal-button {
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.modal-label {
+    text-align: center;
+}
+
+.modal-spacer {
+    height: 24px;
+}
+
+.main-login-modal {
+    padding: 24px 24px 0px 24px;
+}
+
+.modal-error {
+    height: 24px;
+    align-items: center;
+    display: flex;
+}
+
+.delete-modal {
+    width: fit-content;
+}
