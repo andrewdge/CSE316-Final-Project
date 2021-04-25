@@ -29,16 +29,26 @@ module.exports = {
 			return user;
 		},
 		update: async(_, args, { res }) => {
-			const { _id, email, password, firstName, lastName } = args;
-			const hashed = await bcrypt.hash(password, 10);
-			const user = new User({
-				_id: _id,
-				firstName: firstName,
-				lastName: lastName,
-				email: email, 
-				password: hashed,
-			})
-			const replaced = await User.replaceOne({ _id: _id }, user );
+			const { email, password, firstName, lastName } = args;
+			const oldUser = await User.findOne({email: email});
+			let user;
+			if (password === oldUser.password) {
+				user = new User({
+					firstName: firstName,
+					lastName: lastName,
+					email: email, 
+					password: password,
+				});
+			} else {
+				const hashed = await bcrypt.hash(password, 10);
+				user = new User({
+					firstName: firstName,
+					lastName: lastName,
+					email: email, 
+					password: hashed,
+				});
+			}
+			const replaced = await User.replaceOne({ email: email }, user );
 			return replaced;
 		},
 		register: async (_, args, { res }) => {

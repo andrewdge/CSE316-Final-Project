@@ -38,7 +38,7 @@ html {
 }
 
 .modal-label {
-    text-align: center;
+    text-align: right;
 }
 
 .modal-spacer {
@@ -57,4 +57,12 @@ html {
 
 .delete-modal {
     width: fit-content;
+}
+
+.modal-text {
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
 }

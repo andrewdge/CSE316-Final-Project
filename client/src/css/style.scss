@@ -82,6 +82,12 @@ html, body {
 }
 
 .modal-label {
-    color: $text-color;
+    color: var(--light-green);
+    font-size: 20px;
+}
+
+.modal-text {
+    color: $navbar-background-color;
+    background-color: $text-color;
     font-size: 20px;
 }

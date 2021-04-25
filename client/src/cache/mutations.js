@@ -24,8 +24,8 @@ export const REGISTER = gql`
 `;
 
 export const UPDATE = gql`
-	mutation Update($_id: String!, $email: String!, $password: String!, $firstName: String!, $lastName: String!){
-		update(_id: $_id, email: $email, password: $password, firstName: $firstName, lastName: $lastName) {
+	mutation Update($email: String!, $password: String!, $firstName: String!, $lastName: String!){
+		update(email: $email, password: $password, firstName: $firstName, lastName: $lastName) {
 			email
 			password
 			firstName

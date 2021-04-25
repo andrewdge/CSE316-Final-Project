@@ -68,7 +68,7 @@ const CreateAccount = (props) => {
 
 						<div className="modal-spacer">&nbsp;</div>
 						<WInput 
-							className="modal-input" onBlur={updateInput} name="email" labelAnimation="up" 
+							className="modal-input" span onBlur={updateInput} name="email" labelAnimation="up" 
 							barAnimation="solid" labelText="Email Address" wType="outlined" inputType="text" 
 						/>
 						<div className="modal-spacer">&nbsp;</div>
