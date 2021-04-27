@@ -1,7 +1,7 @@
 import React, { useState } 	from 'react';
 import { LOGIN } 			from '../../cache/mutations';
 import { useMutation }    	from '@apollo/client';
-
+import { Redirect, useHistory }         from 'react-router-dom';
 import { WModal, WMHeader, WMMain, WMFooter, WButton, WInput } from 'wt-frontend';
 
 const Login = (props) => {
@@ -29,14 +29,14 @@ const Login = (props) => {
 			props.fetchUser();
 			// props.refetchTodos();
 			toggleLoading(false);
-			props.setShowLogin(false);
 		};
 	};
 
+	let history = useHistory();
 
 	return (
 		<WModal className="login-modal" visible={true} >
-			<WMHeader className="modal-header" style={{ textAlign: 'center' }} onClose={() => props.setShowLogin(false)}>
+			<WMHeader className="modal-header" style={{ textAlign: 'center' }} onClose={() => history.push('/welcome') }>
 				Login
 			</WMHeader>
 

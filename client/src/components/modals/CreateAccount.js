@@ -1,7 +1,7 @@
 import React, { useState } 	from 'react';
 import { REGISTER }			from '../../cache/mutations';
 import { useMutation }    	from '@apollo/client';
-
+import { useHistory }       from 'react-router-dom';
 import { WModal, WMHeader, WMMain, WMFooter, WButton, WInput, WRow, WCol } from 'wt-frontend';
 
 const CreateAccount = (props) => {
@@ -35,16 +35,17 @@ const CreateAccount = (props) => {
 			else {
 				props.fetchUser();
 			}
-			props.setShowCreate(false);
 
 		};
 	};
+
+	let history = useHistory();
 
 	return (
         // Replace div with WModal
 
 		<WModal className="signup-modal" visible={true} >
-			<WMHeader className="modal-header" style={{ textAlign: 'center' }}  onClose={() => props.setShowCreate(false)}>
+			<WMHeader className="modal-header" style={{ textAlign: 'center' }}  onClose={() => history.push('/welcome') }>
 				Create Account
 			</WMHeader>
 
@@ -78,7 +79,7 @@ const CreateAccount = (props) => {
 						/>
 					</WMMain>
 			}
-			<WButton className="modal-button" onClick={handleCreateAccount} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded">
+			<WButton className="modal-button" onClick={handleCreateAccount} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded" color="primary">
 				Submit
 			</WButton>
 			<div className="modal-spacer">&nbsp;</div>

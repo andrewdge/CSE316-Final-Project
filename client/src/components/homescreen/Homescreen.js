@@ -4,56 +4,38 @@ import Login from '../modals/Login';
 import Delete from '../modals/Delete';
 import Update from '../modals/Update';
 import CreateAccount from '../modals/CreateAccount';
+import MapContents from '../maps/MapContents';
 import { WNavbar, WNavItem } 	from 'wt-frontend';
 import { WLayout, WLHeader, WLMain, WLSide } from 'wt-frontend';
 import NavbarOptions from '../navbar/NavbarOptions';
-import { GET_DB_TODOS } 				from '../../cache/queries';
+import { GET_DB_MAPS } 				from '../../cache/queries';
 import * as mutations 					from '../../cache/mutations';
 import { useMutation, useQuery } 		from '@apollo/client';
+import Welcome from '../welcome/Welcome';
+import {  BrowserRouter, Switch, Route, Redirect, useRouteMatch } from 'react-router-dom';
 
 const Homescreen = (props) => {
 
-    // let maps = [];
-    const [showDelete, toggleShowDelete] 	= useState(false);
-	const [showLogin, toggleShowLogin] 		= useState(false);
-	const [showCreate, toggleShowCreate] 	= useState(false);
-    const [showUpdate, toggleShowUpdate]    = useState(false);
+    let maps = [];
+    const [activeMap, setActiveMap]         = useState({});
+    const [AddRegion]                       = useMutation(mutations.ADD_REGION);
 
-    // const { loading, error, data, refetch } = useQuery(GET_DB_TODOS);
-	//  if(loading) { console.log(loading, 'loading'); }
-	// if(error) { console.log(error, 'error'); }
-	// if(data) { 
-	// 	maps = data.getAllMaps;
+    const { loading, error, data, refetch } = useQuery(GET_DB_MAPS);
+	if(loading) { console.log(loading, 'loading'); }
+	if(error) { console.log(error, 'error'); }
+	if(data) { 
+		maps = data.getAllMaps;
+	}
 
-	// }
+    const refetchMaps = async (refetch) => {
+		const { loading, error, data } = await refetch();
+		if (data) {
+			maps = data.getAllMaps;
+		}
+	}
+
 	const auth = props.user === null ? false : true;
 
-    const toggleAllModalOff = () => {
-        toggleShowDelete(false);
-		toggleShowCreate(false);
-        toggleShowUpdate(false);
-        toggleShowLogin(false);
-    }
-
-    const setShowLogin = () => {
-		toggleAllModalOff();
-		toggleShowLogin(!showLogin);
-	};
-
-	const setShowCreate = () => {
-		toggleAllModalOff();
-		toggleShowCreate(!showCreate);
-	};
-
-    const setShowUpdate = () => {
-		toggleAllModalOff();
-		toggleShowUpdate(!showUpdate)
-	};
-
-	const setShowDelete = () => {
-		toggleAllModalOff();
-		toggleShowDelete(!showDelete)
-	};
 
 	// const refetchTodos = async (refetch) => {
 	// 	const { loading, error, data } = await refetch();
@@ -67,30 +49,74 @@ const Homescreen = (props) => {
 	// 	}
 	// }
 
-    console.log(auth);
+    const createNewMap = async () => {
+        const newMap = {
+            _id: '',
+            name: 'Untitled Map',
+            capital: '',
+            leader: '',
+            flag: '',
+            parentRegion: null,
+            subregions: [],
+            landmarks: [],
+            owner: props.user._id
+        }
+        const { data } = await AddRegion({ variables: { map: newMap }} );
+        await refetchMaps(refetch);
+    }
+
+
+    let match = useRouteMatch();
+    
 	return (
 		<WLayout wLayout='header'>
             <WLHeader>
                 <NavbarOptions 
-                    user={props.user} fetchUser={props.fetchUser} auth={auth} 
-                    setShowCreate={setShowCreate} setShowLogin={setShowLogin} setShowUpdate={setShowUpdate}
+                    user={props.user} fetchUser={props.fetchUser} auth={auth}
                 />
             </WLHeader>
+
             <WLMain>
+                { !auth && 
+                    <>
+                        <Redirect exact from="/" to={ {pathname: "/welcome"} } />
 
+                        <Route path="/welcome" name="welcome">
+                            <Welcome />
+                        </Route>
+                        <Route path='/login' name='login'>
+                            <Login fetchUser={props.fetchUser} />
+                        </Route>
+                        <Route path='/createaccount' name='createaccount'>
+                            <CreateAccount fetchUser={props.fetchUser} />
+                        </Route>
+                    </>
+                }
+                { auth && 
+                    <>
+                        <Redirect exact from="/" to={ {pathname: "/home"} } />
+                        
+                        <Route path="/home" name="home">
+                            <MapContents 
+                                user={props.user} fetchUser={props.fetchUser} maps={maps}
+                                createNewMap={createNewMap}
+                            />
+                        </Route>
+                        <Route path='/updateaccount' name='updateaccount'>
+                            <Update fetchUser={props.fetchUser} user={props.user} />
+                        </Route>
+                    </>
+                }
+                
+                {/* <Redirect exact from="/" to={ {pathname: "/home"} } /> */}
+				
+                
+                {/* <Route path={`${match.path}/hi`} name="hi">
+                    <Welcome />
+                </Route> */}
+                
+                
             </WLMain>
-			{
-				showCreate && (<CreateAccount fetchUser={props.fetchUser} setShowCreate={setShowCreate} />)
-			}
-
-			{
-				showLogin && (<Login fetchUser={props.fetchUser} setShowLogin={setShowLogin} />)
-			}
-
-            {
-                showUpdate && (<Update fetchUser={props.fetchUser} setShowUpdate={setShowUpdate} user={props.user}/>)
-            }
-
         </WLayout>
 	);
 };

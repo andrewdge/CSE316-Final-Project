@@ -87,7 +87,18 @@ html, body {
 }
 
 .modal-text {
-    color: $navbar-background-color;
-    background-color: $text-color;
+    color: var(--light-blue);
+    background-color: var(--blue-slate);
     font-size: 20px;
+}
+
+.welcome-text {
+    color: var(--light-blue);
+    font-size: 70px;
+}
+
+.map-title {
+    background-color:#1a1b1d;
+    color: salmon;
+    font-size: 24px;
 }

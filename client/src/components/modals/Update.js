@@ -3,6 +3,7 @@ import { UPDATE }			from '../../cache/mutations';
 import { useMutation }    	from '@apollo/client';
 
 import { WModal, WMHeader, WMMain, WMFooter, WButton, WInput, WRow, WCol } from 'wt-frontend';
+import { useHistory } from 'react-router-dom';
 
 const Update = (props) => {
 	const [input, setInput] = useState({ email: props.user.email, password: props.user.password, firstName: props.user.firstName, lastName: props.user.lastName});
@@ -38,6 +39,7 @@ const Update = (props) => {
         updateInput(e);
     };
 
+    let history = useHistory();
 
 	const handleUpdateAccount = async (e) => {
         if (input['password'] === ''){
@@ -55,13 +57,13 @@ const Update = (props) => {
 		if (data) {
 			toggleLoading(false);
 			props.fetchUser();
-			props.setShowUpdate(false);
+            history.push('/home');
 		};
 	};
 
 	return (
 		<WModal className="update-modal" visible={true} >
-			<WMHeader className="modal-header" style={{ textAlign: 'center' }} onClose={() => props.setShowUpdate(false)}>
+			<WMHeader className="modal-header" style={{ textAlign: 'center' }} onClose={() => history.push('/home')}>
 				Update Account
 			</WMHeader>
 			{

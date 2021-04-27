@@ -2,6 +2,7 @@ import React                                from 'react';
 import { LOGOUT }                           from '../../cache/mutations';
 import { useMutation, useApolloClient }     from '@apollo/client';
 import { WButton, WNavItem, WNavbar }                from 'wt-frontend';
+import { Link }                             from 'react-router-dom';
 import Logo from './Logo';
 
 const LoggedIn = (props) => {
@@ -24,8 +25,8 @@ const LoggedIn = (props) => {
     return (
         <>
             <WNavItem hoverAnimation="lighten">
-                <WButton style={{ color: '#e02645', fontSize: '16px' }} onClick={props.setShowUpdate}  wType="texted" hoverAnimation="text-primary" clickAnimation="ripple-light">
-                    { firstName + " " + lastName }
+                <WButton style={{ color: 'red', fontSize: '16px' }}  wType="texted" hoverAnimation="text-primary" clickAnimation="ripple-light">
+                    <Link to='/updateaccount'>{ firstName + " " + lastName }</Link>
                 </WButton>
             </WNavItem>
             <WNavItem hoverAnimation="lighten">
@@ -41,13 +42,13 @@ const LoggedOut = (props) => {
     return (
         <>
             <WNavItem hoverAnimation="lighten">
-                <WButton className="navbar-options" style={{ color: 'red' }} onClick={props.setShowCreate} wType="texted" clickAnimation="ripple-light" hoverAnimation="text-primary"> 
-                    Create <br></br> Account
+                <WButton className="navbar-options" style={{ color: 'red' }} wType="texted" clickAnimation="ripple-light" hoverAnimation="text-primary"> 
+                    <Link to='/createaccount'>Create<br></br>Account</Link>
                 </WButton>
             </WNavItem>
             <WNavItem hoverAnimation="lighten">
-                <WButton className="navbar-options" onClick={props.setShowLogin} wType="texted" clickAnimation="ripple-light" hoverAnimation="text-primary">
-                    Login
+                <WButton className="navbar-options" wType="texted" clickAnimation="ripple-light" hoverAnimation="text-primary">
+                    <Link to='/login'>Login</Link>
                 </WButton>
             </WNavItem>
         </>

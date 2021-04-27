@@ -16,23 +16,23 @@ const App = () => {
 	if(data) { 
 		let { getCurrentUser } = data;
 		if(getCurrentUser !== null) { 
-			user = getCurrentUser; 
-			console.log("hi");
+			user = getCurrentUser;
 		}
     }
 
 	return(
 		<BrowserRouter>
 			<Switch>
-				<Redirect exact from="/" to={ {pathname: "/home"} } />
+				<Homescreen tps={transactionStack} fetchUser={refetch} user={user} />
+				{/* <Redirect exact from="/" to={ {pathname: "/home"} } />
 				<Route 
 					path="/home" 
-					name="home" 
-					render={() => 
+					name="home"
+					render={() =>
 						<Homescreen tps={transactionStack} fetchUser={refetch} user={user} />
-					} 
+					}
 				/>
-				<Route/>
+				<Route/> */}
 			</Switch>
 		</BrowserRouter>
 	);
