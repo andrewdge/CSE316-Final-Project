@@ -24,7 +24,6 @@ const Delete = (props) => {
                     Delete
 				</WButton>
             </WMMain>
-
         </WModal>
     );
 }

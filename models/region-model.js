@@ -29,6 +29,10 @@ const regionSchema = new Schema(
         },
         subregions: [this],
         landmarks: [Landmark],
+        owner: {
+            type: String,
+            required: true
+        }
     },
 	{ timestamps: true }
 );

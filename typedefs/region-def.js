@@ -29,6 +29,7 @@ const typeDefs = gql `
 		landmarks: [LandmarkInput]
 		owner: String
 	}
+	
 	input LandmarkInput {
 		_id: String
 		name: String
@@ -36,12 +37,12 @@ const typeDefs = gql `
 	}
 
 	extend type Query {
-		getAllMaps: Region
+		getAllMaps: [Region]
 		getRegionById(_id: String!): Region
 		# getLandmarkById(_id: String!): Landmark
 	}
 	extend type Mutation {
-		addRegion(_id: String!, region: RegionInput!): String
+		addRegion(region: RegionInput!): String
 		updateRegion(_id: String!, field: String!, value: String!): String
 		deleteRegion(_id: String!): Boolean
 		# sortRegions(_id: String!, regions: [Region]!, ascending: Boolean!, criteria: String!, doUndo: Boolean!): [Region]

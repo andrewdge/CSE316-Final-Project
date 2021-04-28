@@ -19,40 +19,32 @@ const Homescreen = (props) => {
     let maps = [];
     const [activeMap, setActiveMap]         = useState({});
     const [AddRegion]                       = useMutation(mutations.ADD_REGION);
+    const [UpdateRegion]                    = useMutation(mutations.UPDATE_REGION);
+    const [DeleteRegion]                    = useMutation(mutations.DELETE_REGION);
 
     const { loading, error, data, refetch } = useQuery(GET_DB_MAPS);
 	if(loading) { console.log(loading, 'loading'); }
 	if(error) { console.log(error, 'error'); }
 	if(data) { 
 		maps = data.getAllMaps;
+        // console.log(data);
 	}
 
-    const refetchMaps = async (refetch) => {
-		const { loading, error, data } = await refetch();
-		if (data) {
-			maps = data.getAllMaps;
-		}
-	}
+    // const refetchMaps = async (refetch) => {
+	// 	const { loading, error, data } = await refetch();
+	// 	if (data) {
+	// 		maps = data.getAllMaps;
+	// 	}
+	// }
 
 	const auth = props.user === null ? false : true;
 
 
-	// const refetchTodos = async (refetch) => {
-	// 	const { loading, error, data } = await refetch();
-	// 	if (data) {
-	// 		maps = data.getAllMaps;
-	// 		if (activeList._id) {
-	// 			let tempID = activeList._id;
-	// 			let list = todolists.find(list => list._id === tempID);
-	// 			setActiveList(list);
-	// 		}
-	// 	}
-	// }
-
-    const createNewMap = async () => {
+    const createNewMap = async (name) => {
+        let n = name === '' ? 'Untitled Map' : name;
         const newMap = {
             _id: '',
-            name: 'Untitled Map',
+            name: n,
             capital: '',
             leader: '',
             flag: '',
@@ -61,8 +53,15 @@ const Homescreen = (props) => {
             landmarks: [],
             owner: props.user._id
         }
-        const { data } = await AddRegion({ variables: { map: newMap }} );
-        await refetchMaps(refetch);
+        const { data } = await AddRegion({ variables: { region: newMap }, refetchQueries: [{ query: GET_DB_MAPS}] });
+    }
+
+    const updateMapName = async (_id, name) => {
+        const { data } = await UpdateRegion( { variables: { _id: _id, field: 'name', value: name }, refetchQueries: [{ query: GET_DB_MAPS }]});
+    }
+
+    const deleteMap = (_id) => {
+        DeleteRegion({ variables: { _id: _id}, refetchQueries: [{ query: GET_DB_MAPS}] });
     }
 
 
@@ -85,7 +84,7 @@ const Homescreen = (props) => {
                             <Welcome />
                         </Route>
                         <Route path='/login' name='login'>
-                            <Login fetchUser={props.fetchUser} />
+                            <Login fetchUser={props.fetchUser} refetch={refetch} />
                         </Route>
                         <Route path='/createaccount' name='createaccount'>
                             <CreateAccount fetchUser={props.fetchUser} />
@@ -99,7 +98,7 @@ const Homescreen = (props) => {
                         <Route path="/home" name="home">
                             <MapContents 
                                 user={props.user} fetchUser={props.fetchUser} maps={maps}
-                                createNewMap={createNewMap}
+                                createNewMap={createNewMap} deleteMap={deleteMap} updateMapName={updateMapName}
                             />
                         </Route>
                         <Route path='/updateaccount' name='updateaccount'>
