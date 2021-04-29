@@ -24,11 +24,11 @@ const regionSchema = new Schema(
             required: false
         },
         parentRegion: {
-            type: this,
+            type: ObjectId,
             required: false
         },
-        subregions: [this],
-        landmarks: [Landmark],
+        subregions: [ObjectId],
+        landmarks: [ObjectId],
         owner: {
             type: String,
             required: true

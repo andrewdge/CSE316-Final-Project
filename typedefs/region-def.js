@@ -7,9 +7,9 @@ const typeDefs = gql `
 		capital: String
 		leader: String
 		flag: String
-		parentRegion: Region
-		subregions: [Region]
-		landmarks: [Landmark]
+		parentRegion: String
+		subregions: [String]
+		landmarks: [String]
 		owner: String!
 	}
 	type Landmark {
@@ -24,9 +24,9 @@ const typeDefs = gql `
 		capital: String
 		leader: String
 		flag: String
-		parentRegion: RegionInput
-		subregions: [RegionInput]
-		landmarks: [LandmarkInput]
+		parentRegion: String
+		subregions: [String]
+		landmarks: [String]
 		owner: String
 	}
 	
