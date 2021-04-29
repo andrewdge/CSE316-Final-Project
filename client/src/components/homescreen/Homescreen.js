@@ -71,44 +71,50 @@ const Homescreen = (props) => {
 	return (
 		<WLayout wLayout='header'>
             <WLHeader>
-                <NavbarOptions 
-                    user={props.user} fetchUser={props.fetchUser} auth={auth}
-                />
+                {
+                    auth ? 
+                        <NavbarOptions 
+                            user={props.user} fetchUser={props.fetchUser} auth={auth}
+                        />
+                    :
+                        <NavbarOptions 
+                            user={props.user} fetchUser={props.fetchUser} auth={auth}
+                        />
+                    }
             </WLHeader>
 
             <WLMain>
-                { !auth &&
-                    <Switch>
-                        <Redirect exact from="/" to={ {pathname: "/welcome"} } />
-                        <Route path="/welcome" name="welcome">
-                            <Welcome />
-                        </Route>
-                        <Route path='/login' name='login'>
-                            <Login fetchUser={props.fetchUser} refetch={refetch} />
-                        </Route>
-                        <Route path='/createaccount' name='createaccount'>
-                            <CreateAccount fetchUser={props.fetchUser} />
-                        </Route>
-                    </Switch>
-                }
-                { auth && 
-                    <Switch>
-                        <Redirect exact from="/" to={ {pathname: "/home"} } />
-                        <Redirect exact from='/maps' to={ {pathname: '/home' }} />
-                        <Route path="/home" name="home">
-                            <MapContents 
-                                user={props.user} fetchUser={props.fetchUser} maps={maps} refetch={refetch}
-                                createNewMap={createNewMap} deleteMap={deleteMap} updateMapName={updateMapName} 
-                            />
-                        </Route>
-                        <Route path='/updateaccount' name='updateaccount'>
-                            <Update fetchUser={props.fetchUser} user={props.user} />
-                        </Route>
-                        <Route path='/maps/:_id' name='maps'>
-                            <RegionSpreadsheet maps={maps} />
-                        </Route>
-                        
-                    </Switch>
+                { 
+                    auth ?
+                        <Switch>
+                            <Redirect exact from="/" to={ {pathname: "/home"} } />
+                            <Redirect exact from='/maps' to={ {pathname: '/home' }} />
+                            <Route path="/home" name="home">
+                                <MapContents 
+                                    user={props.user} fetchUser={props.fetchUser} maps={maps} refetch={refetch}
+                                    createNewMap={createNewMap} deleteMap={deleteMap} updateMapName={updateMapName} 
+                                />
+                            </Route>
+                            <Route path='/updateaccount' name='updateaccount'>
+                                <Update fetchUser={props.fetchUser} user={props.user} />
+                            </Route>
+                            <Route path='/maps/:_id' name='maps'>
+                                <RegionSpreadsheet maps={maps} />
+                            </Route>
+                        </Switch>
+                    :
+                        <Switch>
+                            <Redirect exact from="/" to={ {pathname: "/welcome"} } />
+                            <Route path="/welcome" name="welcome">
+                                <Welcome />
+                            </Route>
+                            <Route path='/login' name='login'>
+                                <Login fetchUser={props.fetchUser} refetch={refetch} />
+                            </Route>
+                            <Route path='/createaccount' name='createaccount'>
+                                <CreateAccount fetchUser={props.fetchUser} />
+                            </Route>
+                        </Switch>
                 }
             </WLMain>
         </WLayout>
