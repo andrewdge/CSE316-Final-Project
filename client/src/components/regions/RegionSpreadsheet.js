@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 const RegionSpreadsheet = (props) => {
 
@@ -8,11 +8,9 @@ const RegionSpreadsheet = (props) => {
     let map =  props.maps.find(map => map._id === _id);
 
     return (
-        <Route {...props} >
-            <div>
-                {_id}
-            </div>
-        </Route>
+        <div>
+            {_id}
+        </div>
         
     );
 };
