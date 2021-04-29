@@ -5,6 +5,7 @@ import Delete from '../modals/Delete';
 import Update from '../modals/Update';
 import CreateAccount from '../modals/CreateAccount';
 import MapContents from '../maps/MapContents';
+import RegionSpreadsheet from '../regions/RegionSpreadsheet';
 import { WNavbar, WNavItem } 	from 'wt-frontend';
 import { WLayout, WLHeader, WLMain, WLSide } from 'wt-frontend';
 import NavbarOptions from '../navbar/NavbarOptions';
@@ -12,7 +13,8 @@ import { GET_DB_MAPS } 				from '../../cache/queries';
 import * as mutations 					from '../../cache/mutations';
 import { useMutation, useQuery } 		from '@apollo/client';
 import Welcome from '../welcome/Welcome';
-import {  BrowserRouter, Switch, Route, Redirect, useRouteMatch } from 'react-router-dom';
+import {  BrowserRouter, Switch, Route, Redirect, useRouteMatch, Link } from 'react-router-dom';
+
 
 const Homescreen = (props) => {
 
@@ -64,9 +66,8 @@ const Homescreen = (props) => {
         DeleteRegion({ variables: { _id: _id}, refetchQueries: [{ query: GET_DB_MAPS}] });
     }
 
-
     let match = useRouteMatch();
-    
+
 	return (
 		<WLayout wLayout='header'>
             <WLHeader>
@@ -76,10 +77,9 @@ const Homescreen = (props) => {
             </WLHeader>
 
             <WLMain>
-                { !auth && 
-                    <>
+                { !auth &&
+                    <Switch>
                         <Redirect exact from="/" to={ {pathname: "/welcome"} } />
-
                         <Route path="/welcome" name="welcome">
                             <Welcome />
                         </Route>
@@ -89,32 +89,27 @@ const Homescreen = (props) => {
                         <Route path='/createaccount' name='createaccount'>
                             <CreateAccount fetchUser={props.fetchUser} />
                         </Route>
-                    </>
+                    </Switch>
                 }
                 { auth && 
-                    <>
+                    <Switch>
                         <Redirect exact from="/" to={ {pathname: "/home"} } />
-                        
+                        <Redirect exact from='/maps' to={ {pathname: '/home' }} />
                         <Route path="/home" name="home">
                             <MapContents 
-                                user={props.user} fetchUser={props.fetchUser} maps={maps}
-                                createNewMap={createNewMap} deleteMap={deleteMap} updateMapName={updateMapName}
+                                user={props.user} fetchUser={props.fetchUser} maps={maps} refetch={refetch}
+                                createNewMap={createNewMap} deleteMap={deleteMap} updateMapName={updateMapName} 
                             />
                         </Route>
                         <Route path='/updateaccount' name='updateaccount'>
                             <Update fetchUser={props.fetchUser} user={props.user} />
                         </Route>
-                    </>
+                        <Route path='/maps/:_id' name='maps'>
+                            <RegionSpreadsheet maps={maps} />
+                        </Route>
+                        
+                    </Switch>
                 }
-                
-                {/* <Redirect exact from="/" to={ {pathname: "/home"} } /> */}
-				
-                
-                {/* <Route path={`${match.path}/hi`} name="hi">
-                    <Welcome />
-                </Route> */}
-                
-                
             </WLMain>
         </WLayout>
 	);

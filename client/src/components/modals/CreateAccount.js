@@ -16,6 +16,8 @@ const CreateAccount = (props) => {
 		setInput(updated);
 	};
 
+	let history = useHistory();
+
 	const handleCreateAccount = async (e) => {
 		for (let field in input) {
 			if (!input[field]) {
@@ -34,12 +36,11 @@ const CreateAccount = (props) => {
 			}
 			else {
 				props.fetchUser();
+				history.push('/home');
 			}
 
 		};
 	};
-
-	let history = useHistory();
 
 	return (
         // Replace div with WModal

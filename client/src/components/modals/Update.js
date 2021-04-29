@@ -57,7 +57,7 @@ const Update = (props) => {
 		if (data) {
 			toggleLoading(false);
 			props.fetchUser();
-            history.push('/home');
+            history.goBack();
 		};
 	};
 

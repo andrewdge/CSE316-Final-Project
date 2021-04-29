@@ -7,7 +7,8 @@ const MapList = (props) => {
             {
                 props.maps.map((entry, index) => (
                     <MapEntry
-                        key={entry._id} index={index} entry={entry} deleteMap={props.deleteMap} updateMapName={props.updateMapName}
+                        key={entry._id} index={index} entry={entry} 
+                        deleteMap={props.deleteMap} updateMapName={props.updateMapName}
                     />
                 ))
             }

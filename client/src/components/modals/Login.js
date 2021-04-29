@@ -17,6 +17,8 @@ const Login = (props) => {
 		setInput(updated);
 	}
 
+	let history = useHistory();
+	
 	const handleLogin = async (e) => {
 
 		const { loading, error, data } = await Login({ variables: { ...input } });
@@ -28,11 +30,12 @@ const Login = (props) => {
 		if (data) {
 			props.fetchUser();
 			props.refetch();
+			history.push('/home');
 			toggleLoading(false);
 		};
 	};
 
-	let history = useHistory();
+	
 
 	return (
 		<WModal className="login-modal" visible={true} >
