@@ -17,7 +17,7 @@ module.exports = {
         addRegion: async ( _, args ) => {
             const { region } = args;
             const  objectId = new ObjectId();
-            const { name, capital, leader, flag, parentRegion, subregions, landmarks, owner } = region;
+            const { name, capital, leader, flag, parentRegion, subregions, landmarks, sortId, owner } = region;
             const newMap = new Region({
                 _id: objectId,
                 name: name,
@@ -27,6 +27,7 @@ module.exports = {
                 parentRegion: parentRegion,
                 subregions: subregions,
                 landmarks: landmarks,
+                sortId: sortId,
                 owner: owner
             });
             const added = await newMap.save();
@@ -49,6 +50,23 @@ module.exports = {
             const deleted = await Region.deleteOne({ _id: objectId });
             if (deleted) return true;
             else return false;
+        },
+        moveMapToTop: async ( _, args) => {
+            const { _id } = args;
+			const listId = new ObjectId(_id);
+			await Region.updateMany({parentRegion: null}, {$inc: {sortId: 1}});
+			await Region.updateOne( {_id: listId}, { sortId: 0 });
+			
+			const owner = (await Region.findOne({ _id: listId})).owner;
+			
+			const sorted = await Region.
+				aggregate([{ $match: { owner: owner, parentRegion: null } }]).
+				sort({ sortId: 1 })
+			;
+
+			await Region.deleteMany({ owner: owner, parentRegion: null});
+			const replace = await Region.insertMany(sorted);
+			return replace;
         }
     }
 }

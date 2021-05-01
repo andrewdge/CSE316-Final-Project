@@ -37,6 +37,10 @@ const Map = (props) => {
         toggleEditingMapName(!editingMapName);
     }
 
+    const bubbleMapToTop = (entry) => {
+        props.bubbleMapToTop(entry);
+    }
+
     let history = useHistory();
 
     return (
@@ -48,7 +52,7 @@ const Map = (props) => {
                         <WCol size='3' style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
                             <Link to={{ pathname: `/maps/${props.entry._id}` }} >
                                 <WButton style={{ fontSize: '25px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
-                                    size='large' shape='rounded' hoverAnimation='darken' clickAnimation='ripple-light'>
+                                    onClick={() => bubbleMapToTop(props.entry)} size='large' shape='rounded' hoverAnimation='darken' clickAnimation='ripple-light'>
                                     {mapName}
                                 </WButton>
                             </Link>

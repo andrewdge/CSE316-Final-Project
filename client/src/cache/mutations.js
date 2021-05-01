@@ -57,3 +57,15 @@ export const DELETE_REGION = gql`
 		deleteRegion(_id: $_id)
 	}
 `;
+
+export const MOVE_MAP_TO_TOP = gql`
+	mutation MoveMapToTop($_id: String!) {
+		moveMapToTop(_id: $_id) {
+			_id
+			name
+			subregions
+			sortId
+			owner
+		}
+	}
+`;

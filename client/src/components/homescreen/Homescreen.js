@@ -19,17 +19,16 @@ import {  BrowserRouter, Switch, Route, Redirect, useRouteMatch, Link } from 're
 const Homescreen = (props) => {
 
     let maps = [];
-    const [activeMap, setActiveMap]         = useState({});
     const [AddRegion]                       = useMutation(mutations.ADD_REGION);
     const [UpdateRegion]                    = useMutation(mutations.UPDATE_REGION);
     const [DeleteRegion]                    = useMutation(mutations.DELETE_REGION);
+    const [MoveMapToTop]                    = useMutation(mutations.MOVE_MAP_TO_TOP);
 
     const { loading, error, data, refetch } = useQuery(GET_DB_MAPS);
 	if(loading) { console.log(loading, 'loading'); }
 	if(error) { console.log(error, 'error'); }
 	if(data) { 
 		maps = data.getAllMaps;
-        // console.log(data);
 	}
 
     // const refetchMaps = async (refetch) => {
@@ -41,8 +40,9 @@ const Homescreen = (props) => {
 
 	const auth = props.user === null ? false : true;
 
-
     const createNewMap = async (name) => {
+        const length = maps.length;
+		const id = length >= 1 ? maps[length - 1].sortId + 1 : 0;
         let n = name === '' ? 'Untitled Map' : name;
         const newMap = {
             _id: '',
@@ -53,6 +53,7 @@ const Homescreen = (props) => {
             parentRegion: null,
             subregions: [],
             landmarks: [],
+            sortId: id,
             owner: props.user._id
         }
         const { data } = await AddRegion({ variables: { region: newMap }, refetchQueries: [{ query: GET_DB_MAPS}] });
@@ -66,23 +67,19 @@ const Homescreen = (props) => {
         DeleteRegion({ variables: { _id: _id}, refetchQueries: [{ query: GET_DB_MAPS}] });
     }
 
+    const bubbleMapToTop = async (entry) => {
+        const { data } = await MoveMapToTop({ variables: { _id: entry._id }, refetchQueries: [{ query: GET_DB_MAPS}] });
+    }
+
     let match = useRouteMatch();
 
 	return (
 		<WLayout wLayout='header'>
             <WLHeader>
-                {
-                    auth ? 
-                        <NavbarOptions 
-                            user={props.user} fetchUser={props.fetchUser} auth={auth}
-                        />
-                    :
-                        <NavbarOptions 
-                            user={props.user} fetchUser={props.fetchUser} auth={auth}
-                        />
-                    }
+                <NavbarOptions 
+                    user={props.user} fetchUser={props.fetchUser} auth={auth} 
+                />
             </WLHeader>
-
             <WLMain>
                 { 
                     auth ?
@@ -93,6 +90,7 @@ const Homescreen = (props) => {
                                 <MapContents 
                                     user={props.user} fetchUser={props.fetchUser} maps={maps} refetch={refetch}
                                     createNewMap={createNewMap} deleteMap={deleteMap} updateMapName={updateMapName} 
+                                    bubbleMapToTop={bubbleMapToTop}
                                 />
                             </Route>
                             <Route path='/updateaccount' name='updateaccount'>

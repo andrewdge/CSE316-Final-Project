@@ -18,6 +18,7 @@ export const GET_DB_MAPS = gql`
 			_id
 			name
 			subregions
+			sortId
 			owner
 		}
 	}

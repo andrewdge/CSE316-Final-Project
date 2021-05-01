@@ -29,6 +29,10 @@ const regionSchema = new Schema(
         },
         subregions: [ObjectId],
         landmarks: [ObjectId],
+        sortId: {
+            type: Number,
+            required: true
+        },
         owner: {
             type: String,
             required: true

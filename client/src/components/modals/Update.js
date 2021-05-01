@@ -2,7 +2,7 @@ import React, { useState } 	from 'react';
 import { UPDATE }			from '../../cache/mutations';
 import { useMutation }    	from '@apollo/client';
 
-import { WModal, WMHeader, WMMain, WMFooter, WButton, WInput, WRow, WCol } from 'wt-frontend';
+import { WModal, WMHeader, WMMain, WButton, WInput, WRow, WCol } from 'wt-frontend';
 import { useHistory } from 'react-router-dom';
 
 const Update = (props) => {

@@ -10,6 +10,7 @@ const typeDefs = gql `
 		parentRegion: String
 		subregions: [String]
 		landmarks: [String]
+		sortId: Int!
 		owner: String!
 	}
 	type Landmark {
@@ -27,6 +28,7 @@ const typeDefs = gql `
 		parentRegion: String
 		subregions: [String]
 		landmarks: [String]
+		sortId: Int
 		owner: String
 	}
 	
@@ -45,6 +47,7 @@ const typeDefs = gql `
 		addRegion(region: RegionInput!): String
 		updateRegion(_id: String!, field: String!, value: String!): String
 		deleteRegion(_id: String!): Boolean
+		moveMapToTop(_id: String!): [Region]
 		# sortRegions(_id: String!, regions: [Region]!, ascending: Boolean!, criteria: String!, doUndo: Boolean!): [Region]
 		# addLandmark(_id: String!, landmark: LandmarkInput!): String
 		# updateLandmark(_id: String!, field: String!, value: String!): String

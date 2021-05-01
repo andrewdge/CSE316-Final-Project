@@ -2,7 +2,7 @@ import React                                from 'react';
 import { LOGOUT }                           from '../../cache/mutations';
 import { useMutation, useApolloClient }     from '@apollo/client';
 import { WButton, WNavItem, WNavbar }                from 'wt-frontend';
-import { Link, useHistory }                             from 'react-router-dom';
+import { Link, useHistory, useParams}  from 'react-router-dom';
 import Logo from './Logo';
 
 const LoggedIn = (props) => {
@@ -59,12 +59,27 @@ const NavbarOptions = (props) => {
 
     let history = useHistory();
 
+    const goHome = () => {
+        history.push('/home');
+        // props.setActiveRoute('');
+    }
+
+    let param = useParams();
+    console.log(param);
+
+    // let activeMap = props.activeMap !== null ? props.activeMap.name : '';
+
     return (
         <WNavbar color='colored'>
             <WNavItem>
-                <WButton style={{ backgroundColor: '#1a1b1d' }} onClick={() => history.push('/home')}>  
+                <WButton style={{ backgroundColor: '#1a1b1d' }} onClick={goHome}>  
                     <Logo className='logo' />
                 </WButton>
+            </WNavItem>
+            <WNavItem>
+                {/* <div style ={{ display: 'flex' }}>
+                    {activeMap}
+                </div> */}
             </WNavItem>
             <WNavbar color='colored'>
             {

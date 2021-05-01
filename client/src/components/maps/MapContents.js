@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import MapList from './MapList';
-import { WCard, WCHeader, WCContent, WCMedia, WRow, WCol, WInput } from 'wt-frontend';
+import { WCard, WCHeader, WCContent, WRow, WCol, WInput } from 'wt-frontend';
 import WButton from 'wt-frontend/build/components/wbutton/WButton';
 import world            from '../../images/world.png';
 
@@ -26,7 +26,7 @@ const MapContents = (props) => {
             <WCContent style={{ display: 'flex', flexDirection: 'row'}}>
                 <WCard className='map-entries' raised style={{ backgroundColor: 'salmon', width: '50%', height: '100%' }}>
                     <MapList 
-                        maps={props.maps} deleteMap={props.deleteMap} updateMapName={props.updateMapName}
+                        maps={props.maps} deleteMap={props.deleteMap} updateMapName={props.updateMapName} bubbleMapToTop={props.bubbleMapToTop}
                     />
                 </WCard>
                 <WCard raised style={{ backgroundColor: 'white', width: '50%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end'}}>
