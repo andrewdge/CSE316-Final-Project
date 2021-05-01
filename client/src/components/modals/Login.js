@@ -2,7 +2,8 @@ import React, { useState } 	from 'react';
 import { LOGIN } 			from '../../cache/mutations';
 import { useMutation }    	from '@apollo/client';
 import { Redirect, useHistory }         from 'react-router-dom';
-import { WModal, WMHeader, WMMain, WMFooter, WButton, WInput } from 'wt-frontend';
+import NavbarOptions from '../navbar/NavbarOptions';
+import { WModal, WMHeader, WMMain, WMFooter, WButton, WInput, WLayout, WLHeader, WLMain } from 'wt-frontend';
 
 const Login = (props) => {
 	const [input, setInput] = useState({ email: '', password: '' });
@@ -38,34 +39,43 @@ const Login = (props) => {
 	
 
 	return (
-		<WModal className="login-modal" visible={true} >
-			<WMHeader className="modal-header" style={{ textAlign: 'center' }} onClose={() => history.push('/welcome') }>
-				Login
-			</WMHeader>
 
-			{
-				loading ? <WMMain />
-					: <WMMain className="main-login-modal">
-
-						<WInput className="modal-input" onBlur={updateInput} name='email' labelAnimation="up" barAnimation="solid" labelText="Email Address" wType="outlined" inputType='text' />
-						<div className="modal-spacer">&nbsp;</div>
-						<WInput className="modal-input" onBlur={updateInput} name='password' labelAnimation="up" barAnimation="solid" labelText="Password" wType="outlined" inputType='password' />
-
+		<WLayout wLayout='header'>
+            <WLHeader>
+                <NavbarOptions 
+                    user={props.user} fetchUser={props.fetchUser} auth={props.auth} 
+                />
+            </WLHeader>
+            <WLMain>
+					<WModal className="login-modal" visible={true} >
+						<WMHeader className="modal-header" style={{ textAlign: 'center' }} onClose={() => history.push('/welcome') }>
+							Login
+						</WMHeader>
 						{
-							showErr ? <div className='modal-error'>
-								{errorMsg}
-							</div>
-								: <div className='modal-error'>&nbsp;</div>
-						}
+							loading ? <WMMain />
+								: <WMMain className="main-login-modal">
 
-					</WMMain>
-			}
-			<WMFooter>
-				<WButton className="modal-button" onClick={handleLogin} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded" color="primary">
-					Login
-				</WButton>
-			</WMFooter>
-		</WModal>
+									<WInput className="modal-input" onBlur={updateInput} name='email' labelAnimation="up" barAnimation="solid" labelText="Email Address" wType="outlined" inputType='text' />
+									<div className="modal-spacer">&nbsp;</div>
+									<WInput className="modal-input" onBlur={updateInput} name='password' labelAnimation="up" barAnimation="solid" labelText="Password" wType="outlined" inputType='password' />
+
+									{
+										showErr ? <div className='modal-error'>
+											{errorMsg}
+										</div>
+											: <div className='modal-error'>&nbsp;</div>
+									}
+
+								</WMMain>
+						}
+						<WMFooter>
+							<WButton className="modal-button" onClick={handleLogin} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded" color="primary">
+								Login
+							</WButton>
+						</WMFooter>
+				</WModal>
+			</WLMain>
+		</WLayout>
 	);
 }
 

@@ -2,7 +2,8 @@ import React, { useState } 	from 'react';
 import { REGISTER }			from '../../cache/mutations';
 import { useMutation }    	from '@apollo/client';
 import { useHistory }       from 'react-router-dom';
-import { WModal, WMHeader, WMMain, WButton, WInput, WRow, WCol } from 'wt-frontend';
+import NavbarOptions from '../navbar/NavbarOptions';
+import { WModal, WMHeader, WMMain, WButton, WInput, WRow, WCol, WLayout, WLHeader, WLMain } from 'wt-frontend';
 
 const CreateAccount = (props) => {
 	const [input, setInput] = useState({ email: '', password: '', firstName: '', lastName: '' });
@@ -43,51 +44,55 @@ const CreateAccount = (props) => {
 	};
 
 	return (
-        // Replace div with WModal
+        <WLayout wLayout='header'>
+            <WLHeader>
+                <NavbarOptions 
+                    user={props.user} fetchUser={props.fetchUser} auth={props.auth} 
+                />
+            </WLHeader>
+            <WLMain>
+				<WModal className="signup-modal" visible={true} >
+					<WMHeader className="modal-header" style={{ textAlign: 'center' }}  onClose={() => history.push('/welcome') }>
+						Create Account
+					</WMHeader>
 
-		<WModal className="signup-modal" visible={true} >
-			<WMHeader className="modal-header" style={{ textAlign: 'center' }}  onClose={() => history.push('/welcome') }>
-				Create Account
-			</WMHeader>
+					{
+						loading ? <WMMain />
+							: <WMMain>
+								<WRow className="modal-col-gap signup-modal">
+									<WCol size="6">
+										<WInput 
+											className="" onBlur={updateInput} name="firstName" labelAnimation="up" 
+											barAnimation="solid" labelText="First Name" wType="outlined" inputType="text" 
+										/>
+									</WCol>
+									<WCol size="6">
+										<WInput 
+											className="" onBlur={updateInput} name="lastName" labelAnimation="up" 
+											barAnimation="solid" labelText="Last Name" wType="outlined" inputType="text" 
+										/>
+									</WCol>
+								</WRow>
 
-			{
-				loading ? <WMMain />
-					: <WMMain>
-						<WRow className="modal-col-gap signup-modal">
-							<WCol size="6">
+								<div className="modal-spacer">&nbsp;</div>
 								<WInput 
-									className="" onBlur={updateInput} name="firstName" labelAnimation="up" 
-									barAnimation="solid" labelText="First Name" wType="outlined" inputType="text" 
+									className="modal-input" span onBlur={updateInput} name="email" labelAnimation="up" 
+									barAnimation="solid" labelText="Email Address" wType="outlined" inputType="text" 
 								/>
-							</WCol>
-							<WCol size="6">
+								<div className="modal-spacer">&nbsp;</div>
 								<WInput 
-									className="" onBlur={updateInput} name="lastName" labelAnimation="up" 
-									barAnimation="solid" labelText="Last Name" wType="outlined" inputType="text" 
+									className="modal-input" onBlur={updateInput} name="password" labelAnimation="up" 
+									barAnimation="solid" labelText="Password" wType="outlined" inputType="password" 
 								/>
-							</WCol>
-						</WRow>
-
-						<div className="modal-spacer">&nbsp;</div>
-						<WInput 
-							className="modal-input" span onBlur={updateInput} name="email" labelAnimation="up" 
-							barAnimation="solid" labelText="Email Address" wType="outlined" inputType="text" 
-						/>
-						<div className="modal-spacer">&nbsp;</div>
-						<WInput 
-							className="modal-input" onBlur={updateInput} name="password" labelAnimation="up" 
-							barAnimation="solid" labelText="Password" wType="outlined" inputType="password" 
-						/>
-					</WMMain>
-			}
-			<WButton className="modal-button" onClick={handleCreateAccount} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded" color="primary">
-				Submit
-			</WButton>
-			<div className="modal-spacer">&nbsp;</div>
-			
-			
-
-		</WModal>
+							</WMMain>
+					}
+					<WButton className="modal-button" onClick={handleCreateAccount} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded" color="primary">
+						Submit
+					</WButton>
+					<div className="modal-spacer">&nbsp;</div>
+				</WModal>
+			</WLMain>
+		</WLayout>
 	);
 }
 

@@ -74,48 +74,42 @@ const Homescreen = (props) => {
     let match = useRouteMatch();
 
 	return (
-		<WLayout wLayout='header'>
-            <WLHeader>
-                <NavbarOptions 
-                    user={props.user} fetchUser={props.fetchUser} auth={auth} 
-                />
-            </WLHeader>
-            <WLMain>
-                { 
-                    auth ?
-                        <Switch>
-                            <Redirect exact from="/" to={ {pathname: "/home"} } />
-                            <Redirect exact from='/maps' to={ {pathname: '/home' }} />
-                            <Route path="/home" name="home">
-                                <MapContents 
-                                    user={props.user} fetchUser={props.fetchUser} maps={maps} refetch={refetch}
-                                    createNewMap={createNewMap} deleteMap={deleteMap} updateMapName={updateMapName} 
-                                    bubbleMapToTop={bubbleMapToTop}
-                                />
-                            </Route>
-                            <Route path='/updateaccount' name='updateaccount'>
-                                <Update fetchUser={props.fetchUser} user={props.user} />
-                            </Route>
-                            <Route path='/maps/:_id' name='maps'>
-                                <RegionSpreadsheet maps={maps} />
-                            </Route>
-                        </Switch>
-                    :
-                        <Switch>
-                            <Redirect exact from="/" to={ {pathname: "/welcome"} } />
-                            <Route path="/welcome" name="welcome">
-                                <Welcome />
-                            </Route>
-                            <Route path='/login' name='login'>
-                                <Login fetchUser={props.fetchUser} refetch={refetch} />
-                            </Route>
-                            <Route path='/createaccount' name='createaccount'>
-                                <CreateAccount fetchUser={props.fetchUser} />
-                            </Route>
-                        </Switch>
-                }
-            </WLMain>
-        </WLayout>
+        <>
+            { 
+                auth ?
+                <Switch>
+                    <Route path="/home" name="home">
+                        <MapContents 
+                            user={props.user} fetchUser={props.fetchUser} maps={maps} refetch={refetch}
+                            createNewMap={createNewMap} deleteMap={deleteMap} updateMapName={updateMapName} 
+                            bubbleMapToTop={bubbleMapToTop}
+                        />
+                    </Route>
+                    <Route path='/updateaccount' name='updateaccount'>
+                        <Update fetchUser={props.fetchUser} user={props.user} auth={auth} />
+                    </Route>
+                    <Route path='/maps/:_id' name='maps'>
+                        <RegionSpreadsheet maps={maps} fetchUser={props.fetchUser} user={props.user} auth={auth}  />
+                    </Route>
+                    <Redirect from="/" to={ {pathname: "/home"} } />
+                    <Redirect from='/maps' to={ {pathname: '/home' }} />
+                </Switch>
+                :
+                <Switch>
+                    <Route path="/welcome" name="welcome">
+                        <Welcome user={props.user} fetchUser={props.fetchUser} auth={auth} />
+                    </Route>
+                    <Route path='/login' name='login'>
+                        <Login fetchUser={props.fetchUser} refetch={refetch} user={props.user} auth={auth}/>
+                    </Route>
+                    <Route path='/createaccount' name='createaccount'>
+                        <CreateAccount fetchUser={props.fetchUser} user={props.user} auth={auth} />
+                    </Route>
+                    <Redirect from="/" to={ {pathname: "/welcome"} } />
+                </Switch>
+            }
+        </>
+        
 	);
 };
 

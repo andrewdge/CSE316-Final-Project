@@ -8,9 +8,11 @@ import Logo from './Logo';
 const LoggedIn = (props) => {
     const client = useApolloClient();
 	const [Logout] = useMutation(LOGOUT);
+    const history = useHistory();
 
     const handleLogout = async (e) => {
         Logout();
+        history.push('/welcome');
         const { data } = await props.fetchUser();
         if (data) {
             let reset = await client.resetStore();
@@ -60,7 +62,12 @@ const NavbarOptions = (props) => {
     let history = useHistory();
 
     const goHome = () => {
-        history.push('/home');
+        if (props.auth){
+            history.push('/home');
+        } else {
+            history.push('/welcome');
+        }
+        
         // props.setActiveRoute('');
     }
 
