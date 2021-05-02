@@ -31,6 +31,20 @@ const typeDefs = gql `
 		sortId: Int
 		owner: String
 	}
+
+	type RegionResponse {
+		_id: String!
+		name: String!
+		capital: String
+		leader: String
+		flag: String
+		parentRegion: String
+		subregions: [Region]
+		landmarks: [String]
+		sortId: Int!
+		owner: String!
+	}
+
 	
 	input LandmarkInput {
 		_id: String
@@ -40,7 +54,8 @@ const typeDefs = gql `
 
 	extend type Query {
 		getAllMaps: [Region]
-		getRegionById(_id: String!): Region
+		getAllRegions: [Region]
+		getRegionById(_id: String!): RegionResponse
 		# getLandmarkById(_id: String!): Landmark
 	}
 	extend type Mutation {

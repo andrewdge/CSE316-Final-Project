@@ -1,7 +1,7 @@
 import React                                from 'react';
 import { LOGOUT }                           from '../../cache/mutations';
 import { useMutation, useApolloClient }     from '@apollo/client';
-import { WButton, WNavItem, WNavbar }                from 'wt-frontend';
+import { WButton, WNavItem, WNavbar, WRow, WCol }                from 'wt-frontend';
 import { Link, useHistory, useParams}  from 'react-router-dom';
 import Logo from './Logo';
 
@@ -19,7 +19,6 @@ const LoggedIn = (props) => {
             // if (reset) props.setActiveList({});
         }
     };
-
 
     let firstName = props.user.firstName;
     let lastName = props.user.lastName;
@@ -72,9 +71,27 @@ const NavbarOptions = (props) => {
     }
 
     let param = useParams();
-    console.log(param);
 
-    // let activeMap = props.activeMap !== null ? props.activeMap.name : '';
+    let breadcrumbs;
+    if (props.activeRegion){
+        if (props.activeRegion.parentRegion === null){
+            breadcrumbs = 
+                    <div>
+                        <div>
+                            {props.activeRegion.name}
+                        </div>
+                    </div>;
+        } else {
+            breadcrumbs = 
+                    <div>
+                        <div>
+                            {props.activeRegion.name}
+                        </div>
+                    </div>;
+        }
+        
+    }
+
 
     return (
         <WNavbar color='colored'>
@@ -87,6 +104,7 @@ const NavbarOptions = (props) => {
                 {/* <div style ={{ display: 'flex' }}>
                     {activeMap}
                 </div> */}
+                {breadcrumbs}
             </WNavItem>
             <WNavbar color='colored'>
             {

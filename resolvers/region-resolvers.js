@@ -9,8 +9,24 @@ module.exports = {
 			const maps = await Region.find({ owner: _id, parentRegion: null });
 			if(maps) return (maps);
         },
+        getAllRegions: async (_, __, { req }) => {
+            const _id = new ObjectId(req.userId);
+			if(!_id) { return([])};
+			const maps = await Region.find({ owner: _id, parentRegion: {$ne: null} });
+			if(maps) return (maps);
+        },
         getRegionById: async ( _, args ) => {
-            return null;
+            const { _id } = args;
+            const objectId = new ObjectId(_id);
+            // ???????????????????????
+            let region = await (await Region.findOne({_id: objectId})).toJSON();
+            let subregions = region.subregions;
+            for (i = 0; i < subregions.length; i++) {
+                subregions[i] = await Region.findOne({_id: subregions[i]});
+            }
+            region.subregions = subregions;
+            if (region) return region;
+            else return {};
         },
     },
     Mutation: {
@@ -31,6 +47,12 @@ module.exports = {
                 owner: owner
             });
             const added = await newMap.save();
+            if (parentRegion !== null){
+                const parent = await Region.findOne({ _id: parentRegion});
+                const subregions = parent.subregions;
+                subregions.push(objectId);
+                const updated = await Region.updateOne({ _id: parentRegion }, {subregions: subregions});
+            }
             const objectString = objectId.toString();
             if (added){
                 return objectString;

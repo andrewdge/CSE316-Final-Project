@@ -23,3 +23,44 @@ export const GET_DB_MAPS = gql`
 		}
 	}
 `;
+
+export const GET_DB_REGIONS = gql`
+	query GetDBRegions {
+		getAllRegions {
+			_id
+			name
+			capital
+			leader
+			flag
+			parentRegion
+			subregions
+			landmarks
+			sortId
+			owner
+		}
+	}
+`;
+
+export const GET_REGION_BY_ID = gql`
+	query GetRegionById($_id: String!) {
+		getRegionById(_id: $_id) {
+			_id
+			name
+			capital
+			leader
+			flag
+			parentRegion
+			subregions {
+				_id
+				name
+				capital
+				leader
+				flag
+				landmarks
+			}
+			landmarks
+			sortId
+			owner
+		}
+	}
+`;

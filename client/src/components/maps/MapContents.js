@@ -53,9 +53,7 @@ const MapContents = (props) => {
                                 <WCol size='9'>
                                     <WInput className='modal-input' style={{ color: 'black' }} onBlur={updateInput} name='mapname' labelAnimation="up" barAnimation="solid" labelText="Enter Map Name Here" hoverAnimation='solid' wType="outlined" inputType='text' />
                                 </WCol>
-                                
                             </WRow>
-                            
                         </WCard>
                     </WCContent>
                 </WCard>  
