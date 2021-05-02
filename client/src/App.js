@@ -22,8 +22,8 @@ const App = () => {
 
 	return(
 		<BrowserRouter>
-			<Switch>
-				<Homescreen tps={transactionStack} fetchUser={refetch} user={user} />
+			<Homescreen tps={transactionStack} fetchUser={refetch} user={user} />
+				
 				{/* <Redirect exact from="/" to={ {pathname: "/home"} } />
 				<Route 
 					path="/home" 
@@ -33,7 +33,7 @@ const App = () => {
 					}
 				/>
 				<Route/> */}
-			</Switch>
+			
 		</BrowserRouter>
 	);
 }

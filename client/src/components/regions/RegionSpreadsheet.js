@@ -1,25 +1,28 @@
 import { useLazyQuery } from '@apollo/client';
-import React, { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useLocation, useParams } from 'react-router-dom';
 import { WCard, WCContent, WCHeader, WRow, WCol, WButton, WLayout, WLHeader, WLMain } from 'wt-frontend';
 import NavbarOptions from '../navbar/NavbarOptions';
 import RegionEntry from './RegionEntry';
-import { GET_REGION_ARRAY_BY_ID, GET_REGION_BY_ID } 				from '../../cache/queries';
+import { GET_REGION_BY_ID } 				from '../../cache/queries';
 
 const RegionSpreadsheet = (props) => {
 
+
     let { _id } = useParams();
-
+    
+    let location = useLocation();
+    
     let regions = [];
-
-    const [getRegionById, {loading: regionLoading, error: regionError, data: regionData, refetch: regionRefetch}] = useLazyQuery(GET_REGION_BY_ID);
 
     let activeRegion;
     let subregions;
 
+    const [getRegionById, {loading: regionLoading, error: regionError, data: regionData, refetch: regionRefetch}] = useLazyQuery(GET_REGION_BY_ID);
+
     useEffect(() => {
         getRegionById({ variables: { _id: _id}});
-    }, []);
+    }, [location]);
 
     if (regionError) { 
         console.log(regionError); 
@@ -39,7 +42,7 @@ const RegionSpreadsheet = (props) => {
                 <WLayout wLayout='header'>
                     <WLHeader>
                         <NavbarOptions 
-                            user={props.user} fetchUser={props.fetchUser} auth={props.auth}
+                            user={props.user} fetchUser={props.fetchUser} auth={props.auth} activeRegion={activeRegion}
                         />
                     </WLHeader>
                     <WLMain>
@@ -83,7 +86,9 @@ const RegionSpreadsheet = (props) => {
                                 <WCContent>
                                     {
                                         subregions.map((entry, index) => (
-                                            <RegionEntry key={entry._id} entry={entry} index={index} />
+                                            <RegionEntry 
+                                                key={entry._id} entry={entry} index={index}
+                                            />
                                         ))
                                     }
                                 </WCContent>

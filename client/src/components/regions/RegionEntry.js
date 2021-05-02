@@ -1,11 +1,20 @@
 import React from 'react';
 import { WCard, WRow, WCol, WButton } from 'wt-frontend';
+import { Link, useHistory } from 'react-router-dom';
 
 const RegionEntry = (props) => {
+
+    const history = useHistory();
 
     const deleteSubregion = () =>{
 
     }
+
+
+    const goToSubregion = () => {
+        history.push(`/regions/${props.entry._id}`);
+    }
+
 
     return (
         <WCard style={{ height: '15%', width: '100%', borderStyle: 'solid' }}>
@@ -16,7 +25,11 @@ const RegionEntry = (props) => {
                     </WButton>
                 </WCol>
                 <WCol size='2' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                    {props.entry.name}
+                    <Link to={{ pathname: `/regions/${props.entry._id}` }}>
+                        <WButton onClick={goToSubregion} >   
+                            {props.entry.name}
+                        </WButton>
+                    </Link>
                 </WCol>
                 <WCol size='2' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                     {props.entry.capital}

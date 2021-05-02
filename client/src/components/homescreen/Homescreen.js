@@ -13,7 +13,7 @@ import { GET_DB_MAPS, GET_DB_REGIONS } 				from '../../cache/queries';
 import * as mutations 					from '../../cache/mutations';
 import { useLazyQuery, useMutation, useQuery } 		from '@apollo/client';
 import Welcome from '../welcome/Welcome';
-import {  BrowserRouter, Switch, Route, Redirect, useRouteMatch, Link } from 'react-router-dom';
+import {  BrowserRouter, Switch, Route, Redirect, useRouteMatch, Link, withRouter } from 'react-router-dom';
 
 
 const Homescreen = (props) => {
@@ -96,22 +96,22 @@ const Homescreen = (props) => {
             { 
                 auth ?
                 <Switch>
-                    <Route path="/home" name="home">
+                    <Route exact path="/home" name="home">
                         <MapContents 
                             user={props.user} fetchUser={props.fetchUser} maps={maps} refetch={GetDBMaps.refetch}
                             createNewMap={createNewMap} deleteMap={deleteMap} updateMapName={updateMapName} 
                             bubbleMapToTop={bubbleMapToTop} auth={auth}
                         />
                     </Route>
-                    <Route path='/updateaccount' name='updateaccount'>
+                    <Route exact path='/updateaccount' name='updateaccount'>
                         <Update fetchUser={props.fetchUser} user={props.user} auth={auth} />
                     </Route>
-                    <Route path='/maps/:_id' name='maps'>
+                    <Route exact path='/maps/:_id' name='maps'>
                         <RegionSpreadsheet 
                             fetchUser={props.fetchUser} user={props.user} auth={auth} addNewRegion={addNewRegion}
                         />
                     </Route>
-                    <Route path='/regions/:_id' name='regions'>
+                    <Route exact path='/regions/:_id' name='regions'>
                         <RegionSpreadsheet
                             fetchUser={props.fetchUser} user={props.user} auth={auth} addNewRegion={addNewRegion}
                         />
@@ -120,13 +120,13 @@ const Homescreen = (props) => {
                 </Switch>
                 :
                 <Switch>
-                    <Route path="/welcome" name="welcome">
+                    <Route exact path="/welcome" name="welcome">
                         <Welcome user={props.user} fetchUser={props.fetchUser} auth={auth} />
                     </Route>
-                    <Route path='/login' name='login'>
+                    <Route exact path='/login' name='login'>
                         <Login fetchUser={props.fetchUser} refetch={GetDBMaps.refetch} user={props.user} auth={auth}/>
                     </Route>
-                    <Route path='/createaccount' name='createaccount'>
+                    <Route exact path='/createaccount' name='createaccount'>
                         <CreateAccount fetchUser={props.fetchUser} user={props.user} auth={auth} />
                     </Route>
                     <Redirect exact from="/" to={ {pathname: "/welcome"} } />

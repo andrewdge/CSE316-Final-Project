@@ -1,6 +1,6 @@
-import React                                from 'react';
+import React, { useEffect }                                from 'react';
 import { LOGOUT }                           from '../../cache/mutations';
-import { useMutation, useApolloClient }     from '@apollo/client';
+import { useMutation, useApolloClient}     from '@apollo/client';
 import { WButton, WNavItem, WNavbar, WRow, WCol }                from 'wt-frontend';
 import { Link, useHistory, useParams}  from 'react-router-dom';
 import Logo from './Logo';
@@ -66,21 +66,15 @@ const NavbarOptions = (props) => {
         } else {
             history.push('/welcome');
         }
-        
-        // props.setActiveRoute('');
     }
-
-    let param = useParams();
 
     let breadcrumbs;
     if (props.activeRegion){
         if (props.activeRegion.parentRegion === null){
             breadcrumbs = 
-                    <div>
                         <div>
-                            {props.activeRegion.name}
-                        </div>
-                    </div>;
+                            {props.activeRegion.parentRegion}
+                        </div>;
         } else {
             breadcrumbs = 
                     <div>
