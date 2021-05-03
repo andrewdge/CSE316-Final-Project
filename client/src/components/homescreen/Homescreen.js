@@ -4,6 +4,7 @@ import Update from '../modals/Update';
 import CreateAccount from '../modals/CreateAccount';
 import MapContents from '../maps/MapContents';
 import RegionSpreadsheet from '../regions/RegionSpreadsheet';
+import RegionViewer from '../regions/RegionViewer';
 import { GET_DB_MAPS, GET_DB_REGIONS } 				from '../../cache/queries';
 import * as mutations 					from '../../cache/mutations';
 import { useMutation, useQuery } 		from '@apollo/client';
@@ -117,6 +118,11 @@ const Homescreen = (props) => {
                             deleteSubregion={deleteSubregion} 
                         />
                     </Route>
+                    <Route exact path='/regionviewer/:_id' name='regionviewer'>
+                        <RegionViewer
+                            fetchUser={props.fetchUser} user={props.user} auth={auth}
+                        />
+                    </Route>
                     <Redirect from="/" to={ {pathname: "/home"} } />
                 </Switch>
                 :
@@ -130,6 +136,7 @@ const Homescreen = (props) => {
                     <Route exact path='/createaccount' name='createaccount'>
                         <CreateAccount fetchUser={props.fetchUser} user={props.user} auth={auth} />
                     </Route>
+                    <Redirect exact from="/home" to={ {pathname: "/welcome"} } />
                     <Redirect exact from="/" to={ {pathname: "/welcome"} } />
                 </Switch>
             }

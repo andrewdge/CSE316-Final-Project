@@ -91,3 +91,15 @@ html {
     justify-content: center;
     align-items: center;
 }
+
+.region-entries {
+    overflow-y: scroll;
+}
+
+.region-attribute {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    height: 40px;
+}

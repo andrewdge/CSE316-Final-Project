@@ -1,6 +1,6 @@
 import { useLazyQuery } from '@apollo/client';
 import React, { useEffect, useState } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useHistory, useLocation, useParams, Link } from 'react-router-dom';
 import { WCard, WCContent, WCHeader, WRow, WCol, WButton, WLayout, WLHeader, WLMain } from 'wt-frontend';
 import NavbarOptions from '../navbar/NavbarOptions';
 import RegionEntry from './RegionEntry';
@@ -10,7 +10,7 @@ const RegionSpreadsheet = (props) => {
 
 
     let { _id } = useParams();
-    let location = useLocation();
+    let history = useHistory();
 
     let activeRegion;
     let subregions;
@@ -32,10 +32,6 @@ const RegionSpreadsheet = (props) => {
     const addNewRegion = async () => {
         await props.addNewRegion(_id);
         await regionRefetch();
-    }
-
-    const navigateToRegionViewer = () => {
-        
     }
 
     return (
@@ -60,9 +56,12 @@ const RegionSpreadsheet = (props) => {
                                 </WCol>
                                 <WCol size='6' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'white', fontSize: '20px'}}>
                                     Region name: 
-                                    <WButton style={{ backgroundColor: '#40454e', color: 'deepskyblue'}} hoverAnimation='lighten' clickAnimation='ripple-light' onClick={navigateToRegionViewer}>
-                                        {activeRegion.name}
-                                    </WButton>
+                                    <Link to={{ pathname: `/regionviewer/${activeRegion._id}` }} >
+                                        <WButton style={{ backgroundColor: '#40454e', color: 'deepskyblue'}} hoverAnimation='lighten' clickAnimation='ripple-light' >
+                                            {activeRegion.name}
+                                        </WButton>
+                                    </Link>
+                                    
                                 </WCol>
                                 <WCol size='3'>
 
@@ -88,7 +87,7 @@ const RegionSpreadsheet = (props) => {
                                         </WCol>
                                     </WRow>
                                 </WCHeader>
-                                <WCContent>
+                                <WCContent className='region-entries'>
                                     {
                                         subregions.map((entry, index) => (
                                             <RegionEntry 
