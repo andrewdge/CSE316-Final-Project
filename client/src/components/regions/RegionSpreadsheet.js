@@ -10,19 +10,12 @@ const RegionSpreadsheet = (props) => {
 
 
     let { _id } = useParams();
-    
     let location = useLocation();
-    
-    let regions = [];
 
     let activeRegion;
     let subregions;
-
+    
     const [getRegionById, {loading: regionLoading, error: regionError, data: regionData, refetch: regionRefetch}] = useLazyQuery(GET_REGION_BY_ID);
-
-    useEffect(() => {
-        getRegionById({ variables: { _id: _id}});
-    }, [location]);
 
     if (regionError) { 
         console.log(regionError); 
@@ -32,8 +25,17 @@ const RegionSpreadsheet = (props) => {
         subregions = activeRegion.subregions;
     }
 
-    const addNewRegion = () => {
-        props.addNewRegion(_id);
+    useEffect(() => {
+        getRegionById({ variables: { _id: _id}});
+    }, [subregions, _id]);
+    
+    const addNewRegion = async () => {
+        await props.addNewRegion(_id);
+        await regionRefetch();
+    }
+
+    const navigateToRegionViewer = () => {
+        
     }
 
     return (
@@ -57,7 +59,10 @@ const RegionSpreadsheet = (props) => {
 
                                 </WCol>
                                 <WCol size='6' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'white', fontSize: '20px'}}>
-                                    Region name: {activeRegion.name}
+                                    Region name: 
+                                    <WButton style={{ backgroundColor: '#40454e', color: 'deepskyblue'}} hoverAnimation='lighten' clickAnimation='ripple-light' onClick={navigateToRegionViewer}>
+                                        {activeRegion.name}
+                                    </WButton>
                                 </WCol>
                                 <WCol size='3'>
 
@@ -87,7 +92,7 @@ const RegionSpreadsheet = (props) => {
                                     {
                                         subregions.map((entry, index) => (
                                             <RegionEntry 
-                                                key={entry._id} entry={entry} index={index}
+                                                key={entry._id} entry={entry} index={index} deleteSubregion={props.deleteSubregion} regionRefetch={regionRefetch}
                                             />
                                         ))
                                     }

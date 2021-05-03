@@ -69,21 +69,27 @@ const NavbarOptions = (props) => {
     }
 
     let breadcrumbs;
+    console.log(props.activeRegion);
     if (props.activeRegion){
         if (props.activeRegion.parentRegion === null){
             breadcrumbs = 
-                        <div>
-                            {props.activeRegion.parentRegion}
-                        </div>;
+                        <></>;
         } else {
+            if (props.activeRegion.parentRegion.parentRegion === null){
+                breadcrumbs = 
+                <Link to={{ pathname: `/maps/${props.activeRegion.parentRegion._id}`}}>
+                    <WButton>
+                        {props.activeRegion.parentRegion.name}
+                    </WButton>
+                </Link>;
+            }
             breadcrumbs = 
-                    <div>
-                        <div>
-                            {props.activeRegion.name}
-                        </div>
-                    </div>;
+                <Link to={{ pathname: `/regions/${props.activeRegion.parentRegion._id}`}}>
+                    <WButton >
+                        {props.activeRegion.parentRegion.name}
+                    </WButton>
+                </Link>;
         }
-        
     }
 
 

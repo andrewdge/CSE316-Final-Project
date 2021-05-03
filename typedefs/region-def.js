@@ -38,14 +38,13 @@ const typeDefs = gql `
 		capital: String
 		leader: String
 		flag: String
-		parentRegion: String
+		parentRegion: Region
 		subregions: [Region]
 		landmarks: [String]
 		sortId: Int!
 		owner: String!
 	}
 
-	
 	input LandmarkInput {
 		_id: String
 		name: String

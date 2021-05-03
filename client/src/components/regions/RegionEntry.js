@@ -6,18 +6,17 @@ const RegionEntry = (props) => {
 
     const history = useHistory();
 
-    const deleteSubregion = () =>{
-
+    const deleteSubregion = async () =>{
+        await props.deleteSubregion(props.entry._id);
+        await props.regionRefetch();
     }
-
 
     const goToSubregion = () => {
         history.push(`/regions/${props.entry._id}`);
     }
 
-
     return (
-        <WCard style={{ height: '15%', width: '100%', borderStyle: 'solid' }}>
+        <WCard style={{ height: '60px', width: '100%', borderStyle: 'solid' }}>
             <WRow style={{ height: '100%', width: '100%'}}>
                 <WCol size='1' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                     <WButton shape='rounded' hoverAnimation='lighten' clickAnimation='ripple-light' onClick={deleteSubregion}>
@@ -26,7 +25,7 @@ const RegionEntry = (props) => {
                 </WCol>
                 <WCol size='2' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                     <Link to={{ pathname: `/regions/${props.entry._id}` }}>
-                        <WButton onClick={goToSubregion} >   
+                        <WButton style={{ color: 'deepskyblue' }} onClick={goToSubregion} >   
                             {props.entry.name}
                         </WButton>
                     </Link>

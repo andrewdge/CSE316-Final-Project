@@ -1,19 +1,14 @@
-import React, { useState, useEffect } 	from 'react';
-import Logo from '../navbar/Logo';
+import React	from 'react';
 import Login from '../modals/Login';
-import Delete from '../modals/Delete';
 import Update from '../modals/Update';
 import CreateAccount from '../modals/CreateAccount';
 import MapContents from '../maps/MapContents';
 import RegionSpreadsheet from '../regions/RegionSpreadsheet';
-import { WNavbar, WNavItem } 	from 'wt-frontend';
-import { WLayout, WLHeader, WLMain, WLSide } from 'wt-frontend';
-import NavbarOptions from '../navbar/NavbarOptions';
 import { GET_DB_MAPS, GET_DB_REGIONS } 				from '../../cache/queries';
 import * as mutations 					from '../../cache/mutations';
-import { useLazyQuery, useMutation, useQuery } 		from '@apollo/client';
+import { useMutation, useQuery } 		from '@apollo/client';
 import Welcome from '../welcome/Welcome';
-import {  BrowserRouter, Switch, Route, Redirect, useRouteMatch, Link, withRouter } from 'react-router-dom';
+import { Switch, Route, Redirect, useRouteMatch } from 'react-router-dom';
 
 
 const Homescreen = (props) => {
@@ -86,7 +81,11 @@ const Homescreen = (props) => {
             sortId: id,
             owner: props.user._id
         }
-        const { data } = await AddRegion({ variables: { region: newRegion }, refetchQueries: [{ query: GET_DB_MAPS}] });
+        const { data } = await AddRegion({ variables: { region: newRegion }, refetchQueries: [{ query: GET_DB_REGIONS}] });
+    }
+
+    const deleteSubregion= async (_id) => {
+        await DeleteRegion({ variables: { _id: _id}, refetchQueries: [{ query: GET_DB_REGIONS}] });
     }
 
     let match = useRouteMatch();
@@ -108,12 +107,14 @@ const Homescreen = (props) => {
                     </Route>
                     <Route exact path='/maps/:_id' name='maps'>
                         <RegionSpreadsheet 
-                            fetchUser={props.fetchUser} user={props.user} auth={auth} addNewRegion={addNewRegion}
+                            fetchUser={props.fetchUser} user={props.user} auth={auth} addNewRegion={addNewRegion} 
+                            deleteSubregion={deleteSubregion}
                         />
                     </Route>
                     <Route exact path='/regions/:_id' name='regions'>
                         <RegionSpreadsheet
                             fetchUser={props.fetchUser} user={props.user} auth={auth} addNewRegion={addNewRegion}
+                            deleteSubregion={deleteSubregion} 
                         />
                     </Route>
                     <Redirect from="/" to={ {pathname: "/home"} } />

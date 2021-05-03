@@ -49,13 +49,18 @@ export const GET_REGION_BY_ID = gql`
 			capital
 			leader
 			flag
-			parentRegion
+			parentRegion {
+				_id
+				name
+				parentRegion
+			}
 			subregions {
 				_id
 				name
 				capital
 				leader
 				flag
+				parentRegion
 				landmarks
 			}
 			landmarks

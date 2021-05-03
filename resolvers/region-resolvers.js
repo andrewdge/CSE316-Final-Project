@@ -25,6 +25,11 @@ module.exports = {
                 subregions[i] = await Region.findOne({_id: subregions[i]});
             }
             region.subregions = subregions;
+            if (region.parentRegion !== null){
+                let parentRegion = await (await Region.findOne({_id: region.parentRegion })).toJSON();
+                console.log(region.parentRegion);
+                region.parentRegion = parentRegion;
+            }
             if (region) return region;
             else return {};
         },
@@ -69,6 +74,13 @@ module.exports = {
         deleteRegion: async ( _, args ) => {
             const { _id } = args;
             const objectId = new ObjectId(_id);
+            const region = await Region.findOne({_id: objectId});
+            if (region.parentRegion !== null){
+                const parent = await Region.findOne({_id: region.parentRegion});
+                let subregions = parent.subregions;
+                subregions = subregions.filter(region => region._id.toString() !== _id);
+                await Region.updateOne({_id: region.parentRegion }, { subregions: subregions});
+            }
             const deleted = await Region.deleteOne({ _id: objectId });
             if (deleted) return true;
             else return false;
