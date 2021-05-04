@@ -70,7 +70,7 @@ const RegionViewer = (props) => {
                                                 </Link>
                                             </div>
                                             <div className='region-attribute'>
-                                                Parent Region: {activeRegion.parentRegion.name}
+                                                Parent Region: {activeRegion.parentRegion ? activeRegion.parentRegion.name : 'none'}
                                             </div>
                                             <div className='region-attribute'>
                                                 Region Capital: {activeRegion.capital}
