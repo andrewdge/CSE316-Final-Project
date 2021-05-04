@@ -27,7 +27,6 @@ module.exports = {
             region.subregions = subregions;
             if (region.parentRegion !== null){
                 let parentRegion = await (await Region.findOne({_id: region.parentRegion })).toJSON();
-                console.log(region.parentRegion);
                 region.parentRegion = parentRegion;
             }
             if (region) return region;

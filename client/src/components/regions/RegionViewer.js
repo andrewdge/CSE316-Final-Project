@@ -25,13 +25,13 @@ const RegionViewer = (props) => {
     }
 
     useEffect(() => {
-        console.log('hi');
         getRegionById({ variables: { _id: _id}});
     }, [subregions, _id]);
 
+
     return (
         <>
-            { activeRegion && 
+            { activeRegion &&
                 <WLayout wLayout='header'>
                     <WLHeader>
                         <NavbarOptions 
@@ -70,7 +70,7 @@ const RegionViewer = (props) => {
                                                 </Link>
                                             </div>
                                             <div className='region-attribute'>
-                                                Parent Region: {activeRegion.parentRegion}
+                                                Parent Region: {activeRegion.parentRegion.name}
                                             </div>
                                             <div className='region-attribute'>
                                                 Region Capital: {activeRegion.capital}
