@@ -74,15 +74,31 @@ module.exports = {
             const { _id } = args;
             const objectId = new ObjectId(_id);
             const region = await Region.findOne({_id: objectId});
+            // delete ref in parent's subregions field
             if (region.parentRegion !== null){
                 const parent = await Region.findOne({_id: region.parentRegion});
                 let subregions = parent.subregions;
                 subregions = subregions.filter(region => region._id.toString() !== _id);
                 await Region.updateOne({_id: region.parentRegion }, { subregions: subregions});
             }
-            const deleted = await Region.deleteOne({ _id: objectId });
+
+            let recursiveDel = async (objectId) => {
+                const region = await Region.findOne({ _id: objectId});
+                const subregions = region.subregions;
+                if (!subregions){
+                    const del = await Region.deleteOne({_id: objectId});
+                    return del;
+                } else {
+                    const del = await Region.deleteOne({ _id: objectId});
+                    subregions.forEach( element => {
+                        recursiveDel(element);
+                    });
+                }
+            };
+            let deleted = recursiveDel(objectId);
             if (deleted) return true;
             else return false;
+            
         },
         moveMapToTop: async ( _, args) => {
             const { _id } = args;
