@@ -11,6 +11,10 @@ const RegionSpreadsheet = (props) => {
 
     let { _id } = useParams();
     let history = useHistory();
+
+    const [isNameAscending, nameToggleAscending] = useState(false);
+    const [isCapitalAscending, capitalToggleAscending] = useState(false);
+    const [isLeaderAscending, leaderToggleAscending] = useState(false);
     
     useEffect(() => {
         props.getRegionById({ variables: { _id: _id}});
@@ -19,6 +23,21 @@ const RegionSpreadsheet = (props) => {
     const addNewRegion = async () => {
         await props.addNewRegion(_id);
         await props.regionRefetch();
+    }
+
+    const nameReorder = () => {
+        props.sortRegions(props.activeRegion._id, isNameAscending, "name", props.activeRegion.subregions);
+        nameToggleAscending(!isNameAscending);
+    }
+
+    const capitalReorder = () => {
+        props.sortRegions(props.activeRegion._id, isCapitalAscending, "capital", props.activeRegion.subregions);
+        capitalToggleAscending(!isCapitalAscending);
+    }
+
+    const leaderReorder = () => {
+        props.sortRegions(props.activeRegion._id, isLeaderAscending, "leader", props.activeRegion.subregions);
+        leaderToggleAscending(!isLeaderAscending);
     }
 
     return (
@@ -73,12 +92,18 @@ const RegionSpreadsheet = (props) => {
 
                                         </WCol>
                                         <WCol size='2' className='header-title'>
-                                            Name
+                                            <WButton wType='texted' className='header-title' onClick={nameReorder} hoverAnimation='darken' clickAnimation='ripple-light' >
+                                                Name
+                                            </WButton>
                                         </WCol>
                                         <WCol size='2' className='header-title'>
-                                            Capital
+                                            <WButton wType='texted' className='header-title' onClick={capitalReorder} hoverAnimation='darken' clickAnimation='ripple-light' >
+                                                Capital
+                                            </WButton>
                                         </WCol><WCol size='2' className='header-title'>
-                                            Leader
+                                            <WButton wType='texted' className='header-title' onClick={leaderReorder} hoverAnimation='darken' clickAnimation='ripple-light' >
+                                                Leader
+                                            </WButton>
                                         </WCol><WCol size='2' className='header-title'>
                                             Flag
                                         </WCol><WCol size='3' className='header-title'>

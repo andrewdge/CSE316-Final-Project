@@ -137,6 +137,26 @@ module.exports = {
 			await Region.deleteMany({ owner: owner, parentRegion: null});
 			const replace = await Region.insertMany(sorted);
 			return replace;
+        },
+        sortRegionsByCriteria: async ( _, args) => {
+            const { _id, isAscending, criteria, doUndo, subregions } = args;
+            const objectId = new ObjectId(_id);
+			const region = await Region.findOne({ _id: objectId});
+			
+			if (doUndo === "do"){
+				subregions.sort(function(a, b) {
+					a = a[criteria];
+					b = b[criteria];
+					return isAscending ?    (a<b)  ?  -1:   (a>b)?1:0               :         (a>b)  ?  -1  :     (a<b)?1:0; 
+				});
+				const updated = await Region.updateOne({_id: objectId}, { subregions: subregions });
+				if (updated) return (subregions);
+				else return (region.subregions);
+			} else {
+				const updated = await Region.updateOne({_id: objectId }, { subregions: subregions });
+				if (updated) return (subregions);
+				else return (region.subregions);
+			}
         }
     }
 }

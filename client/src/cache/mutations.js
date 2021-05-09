@@ -52,6 +52,23 @@ export const UPDATE_REGION = gql`
 	}
 `;
 
+export const SORT_REGIONS_BY_CRITERIA = gql`
+	mutation SortRegionsByCriteria($_id: String!, $isAscending: Boolean!, $criteria: String!, $doUndo: String!, $subregions: [RegionInput]!) {
+		sortRegionsByCriteria(_id: $_id, isAscending: $isAscending, criteria: $criteria, doUndo: $doUndo, subregions: $subregions) {
+			_id
+			name
+			capital
+			leader
+			flag
+			parentRegion
+			subregions
+			landmarks
+			sortId
+			owner
+		}
+	}
+`;
+
 export const DELETE_REGION = gql`
 	mutation DeleteRegion($_id: String!) {
 		deleteRegion(_id: $_id)

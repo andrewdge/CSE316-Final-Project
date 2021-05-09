@@ -61,6 +61,28 @@ export class EditRegion_Transaction extends jsTPS_Transaction {
     }
 }
 
+export class SortRegionsByCriteria_Transaction extends jsTPS_Transaction {
+    constructor(_id, isAscending, criteria, subregions, callback) {
+        super();
+        this._id= _id;
+		this.isAscending = isAscending;
+        this.criteria = criteria;
+        this.subregions = subregions;
+		this.updateFunction = callback;
+	}
+
+    async doTransaction() {
+		const { data } = await this.updateFunction({ variables: { _id: this._id, isAscending: this.isAscending, criteria: this.criteria, doUndo: "do", subregions:  this.subregions }});
+        this.sortedRegions = data;
+		return data;
+    }
+
+    async undoTransaction() {
+		const { data } = await this.updateFunction({ variables: { _id: this._id, isAscending: this.isAscending, criteria: this.criteria, doUndo: "undo", subregions: this.subregions }});
+		return data;
+    }
+}
+
 export class jsTPS {
     constructor() {
         // THE TRANSACTION STACK
