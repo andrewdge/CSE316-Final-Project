@@ -9,7 +9,7 @@
     $modal-border: 1px solid rgb(87, 93, 105),
     $modal-button-color: rgba(255,255,255, 0.7),
     $modal-button-hover: #e9edf0,
-    $button-text-color: rgb(238, 232, 232),
+    $button-text-color: black,
     // other variable changes here
 );
 
@@ -123,4 +123,24 @@ html, body {
 .region-attribute {
     color: white;
     font-size: 25px;
+}
+
+.table-input-class {
+    color: black !important;
+}
+
+.table-entry-buttons {
+    color: $text-color;
+}
+
+.table-entry-buttons:hover {
+    transition: 0.1s ease-in-out;
+    cursor: pointer;
+    background-color: var(--warm-black);
+}
+
+.table-entry-buttons-disabled {
+    transition: 0.1s ease-in-out;
+    cursor: default;
+    color: var(--warm-black);
 }

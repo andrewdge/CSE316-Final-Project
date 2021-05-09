@@ -35,8 +35,13 @@ module.exports = {
     },
     Mutation: {
         addRegion: async ( _, args ) => {
-            const { region } = args;
-            const  objectId = new ObjectId();
+            const { region, regionExists } = args;
+            let objectId;
+            if (regionExists){
+                objectId = new ObjectId(region._id);
+            } else {
+                objectId = new ObjectId();
+            }
             const { name, capital, leader, flag, parentRegion, subregions, landmarks, sortId, owner } = region;
             const newMap = new Region({
                 _id: objectId,
@@ -61,7 +66,7 @@ module.exports = {
             if (added){
                 return objectString;
             }
-            else return ('Could not add map');
+            else return '';
         },
         updateRegion: async ( _, args ) => {
             const { _id, field, value } = args; 
@@ -69,6 +74,22 @@ module.exports = {
             const updated = await Region.updateOne({ _id: objectId }, { [field]: value });
             if (updated) return value;
             else return "";
+        },
+        tempDeleteRegion: async ( _, args ) => {
+            const { _id } = args;
+            const objectId = new ObjectId(_id);
+            const region = await Region.findOne({_id: objectId});
+            // delete ref in parent's subregions field
+            if (region.parentRegion !== null){
+                const parent = await Region.findOne({_id: region.parentRegion});
+                let subregions = parent.subregions;
+                subregions = subregions.filter(region => region._id.toString() !== _id);
+                await Region.updateOne({_id: region.parentRegion }, { subregions: subregions});
+            }
+            let deleted = await Region.deleteOne({ _id: objectId});
+            if (deleted) return region;
+            else return null;
+            
         },
         deleteRegion: async ( _, args ) => {
             const { _id } = args;

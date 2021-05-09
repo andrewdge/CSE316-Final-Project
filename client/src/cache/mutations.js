@@ -41,8 +41,8 @@ export const LOGOUT = gql`
 `;
 
 export const ADD_REGION = gql`
-	mutation AddRegion($region: RegionInput!) {
-		addRegion(region: $region)
+	mutation AddRegion($region: RegionInput!, $regionExists: Boolean!) {
+		addRegion(region: $region, regionExists: $regionExists)
 	}
 `;
 
@@ -55,6 +55,23 @@ export const UPDATE_REGION = gql`
 export const DELETE_REGION = gql`
 	mutation DeleteRegion($_id: String!) {
 		deleteRegion(_id: $_id)
+	}
+`;
+
+export const TEMP_DELETE_REGION = gql`
+	mutation TempDeleteRegion($_id: String!) {
+		tempDeleteRegion(_id: $_id) {
+			_id
+			name
+			capital
+			leader
+			flag
+			parentRegion
+			subregions
+			landmarks
+			sortId
+			owner
+		}
 	}
 `;
 

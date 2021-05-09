@@ -11,57 +11,56 @@ const RegionSpreadsheet = (props) => {
 
     let { _id } = useParams();
     let history = useHistory();
-
-    let activeRegion;
-    let subregions;
     
-    const [getRegionById, {loading: regionLoading, error: regionError, data: regionData, refetch: regionRefetch}] = useLazyQuery(GET_REGION_BY_ID);
-
-    if (regionError) { 
-        console.log(regionError); 
-    }
-    if (regionData) {
-        activeRegion = regionData.getRegionById;
-        subregions = activeRegion.subregions;
-    }
-
     useEffect(() => {
-        getRegionById({ variables: { _id: _id}});
-    }, [subregions, _id]);
+        props.getRegionById({ variables: { _id: _id}});
+    }, [props.subregions, _id]);
     
     const addNewRegion = async () => {
         await props.addNewRegion(_id);
-        await regionRefetch();
+        await props.regionRefetch();
     }
 
     return (
         <>
-            { activeRegion && 
+            { props.activeRegion && 
                 <WLayout wLayout='header'>
                     <WLHeader>
                         <NavbarOptions 
-                            user={props.user} fetchUser={props.fetchUser} auth={props.auth} activeRegion={activeRegion}
+                            user={props.user} fetchUser={props.fetchUser} auth={props.auth} activeRegion={props.activeRegion} clearTPS={props.clearTPS}
                         />
                     </WLHeader>
                     <WLMain>
                         <div style={{ height: '100%', width: '100%'}}>
                             <WRow style={{ width: '90%', marginTop: '2%', marginLeft: '5%'}}>
-                                <WCol size='1'>
-                                    <WButton shape='rounded' hoverAnimation='lighten' clickAnimation='ripple-light' onClick={addNewRegion}>
-                                        <i className='material-icons'>add_box</i>
-                                    </WButton>
-                                </WCol>
                                 <WCol size='2'>
+                                    <WRow>
+                                        <WCol size='4'>
+                                            <WButton shape='rounded' hoverAnimation='lighten' clickAnimation='ripple-light' onClick={addNewRegion}>
+                                                <i className='material-icons'>add_box</i>
+                                            </WButton>
+                                        </WCol>
+                                        <WCol size='8'>
+                                            <WButton className='table-entry-buttons' /*onClick={props.undo}*/ onClick={props.canUndo ? props.undo : () => {} } wType="texted" shape="rounded" disabled={!props.canUndo}>
+                                                <i className="material-icons">undo</i>
+                                            </WButton>
+
+                                            <WButton className='table-entry-buttons' /*onClick={props.redo}*/ onClick={props.canRedo ? props.redo : () => {} } wType="texted" shape="rounded" disabled={!props.canRedo}>
+                                                <i className="material-icons">redo</i>
+                                            </WButton>
+                                        </WCol>
+                                    </WRow>
+                                </WCol>
+                                <WCol size='1'>
 
                                 </WCol>
                                 <WCol size='6' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'white', fontSize: '20px'}}>
                                     Region name: 
-                                    <Link to={{ pathname: `/regionviewer/${activeRegion._id}` }} >
-                                        <WButton style={{ backgroundColor: '#40454e', color: 'deepskyblue'}} hoverAnimation='lighten' clickAnimation='ripple-light' >
-                                            {activeRegion.name}
+                                    <Link to={{ pathname: `/regionviewer/${props.activeRegion._id}` }} >
+                                        <WButton wType='texted' color='success' hoverAnimation='darken' clickAnimation='ripple-light' >
+                                            {props.activeRegion.name}
                                         </WButton>
                                     </Link>
-                                    
                                 </WCol>
                                 <WCol size='3'>
 
@@ -89,9 +88,10 @@ const RegionSpreadsheet = (props) => {
                                 </WCHeader>
                                 <WCContent className='region-entries'>
                                     {
-                                        subregions.map((entry, index) => (
+                                        props.subregions.map((entry, index) => (
                                             <RegionEntry 
-                                                key={entry._id} entry={entry} index={index} deleteSubregion={props.deleteSubregion} regionRefetch={regionRefetch}
+                                                key={entry._id} entry={entry} index={index} deleteSubregion={props.deleteSubregion} 
+                                                regionRefetch={props.regionRefetch} editRegion={props.editRegion} clearTPS={props.clearTPS}
                                             />
                                         ))
                                     }

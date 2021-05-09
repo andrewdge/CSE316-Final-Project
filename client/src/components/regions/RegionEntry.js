@@ -1,18 +1,48 @@
-import React from 'react';
-import { WCard, WRow, WCol, WButton } from 'wt-frontend';
+import React, { useState } from 'react';
+import { WCard, WRow, WCol, WButton, WInput } from 'wt-frontend';
 import { Link, useHistory } from 'react-router-dom';
 
 const RegionEntry = (props) => {
+    
+    const name = props.entry.name;
+    const capital = props.entry.capital;
+    const leader = props.entry.leader;
+    const [editingName, toggleNameEdit] = useState(false);
+    const [editingCapital, toggleCapitalEdit] = useState(false);
+    const [editingLeader, toggleLeaderEdit] = useState(false);
+
+    const handleNameEdit = (e) => {
+        toggleNameEdit(false);
+        const newName = e.target.value ? e.target.value : 'Untitled Region';
+        const prevName = name;
+        //props.editRegion(props.entry._id, 'name', newName, prevName);
+    };
+
+    const handleCapitalEdit = (e) => {
+        toggleCapitalEdit(false);
+        const newCapital = e.target.value ? e.target.value : 'Untitled Capital';
+        const prevCapital = capital;
+        //props.editRegion(props.entry._id, 'capital', newCapital, prevCapital);
+    };
+
+    const handleLeaderEdit = (e) => {
+        toggleLeaderEdit(false);
+        const newLeader = e.target.value ? e.target.value : 'Unnamed Leader';
+        const prevLeader = leader;
+        //props.editRegion(props.entry._id, 'leader', newLeader, prevLeader);
+    };
+
 
     const history = useHistory();
 
     const deleteSubregion = async () =>{
-        await props.deleteSubregion(props.entry._id);
+        await props.deleteSubregion(props.entry);
         await props.regionRefetch();
     }
 
     const goToSubregion = () => {
         history.push(`/regions/${props.entry._id}`);
+        props.clearTPS();
     }
 
     return (
@@ -22,25 +52,59 @@ const RegionEntry = (props) => {
                     <WButton shape='rounded' hoverAnimation='lighten' clickAnimation='ripple-light' onClick={deleteSubregion}>
                         <i className='material-icons'>clear</i>
                     </WButton>
-                </WCol>
-                <WCol size='2' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                     <Link to={{ pathname: `/regions/${props.entry._id}` }}>
-                        <WButton style={{ color: 'deepskyblue' }} onClick={goToSubregion} >   
-                            {props.entry.name}
+                        <WButton wType='ghost' style={{ color: 'deepskyblue' }} onClick={goToSubregion} hoverAnimation='darken' >   
+                            <i className='material-icons'>subdirectory_arrow_right</i>
                         </WButton>
                     </Link>
                 </WCol>
                 <WCol size='2' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                    {props.entry.capital}
+                    {
+                        editingName
+                            ? <WInput
+                                className='table-input' onBlur={handleNameEdit}
+                                autoFocus={true} defaultValue={name} type='text'
+                                wType="outlined" inputClass="table-input-class"
+                            />
+                            : <div className="table-text"
+                                onClick={() => toggleNameEdit(!editingName)}
+                            >{name}
+                            </div>
+                    }
                 </WCol>
                 <WCol size='2' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                    {props.entry.leader}
+                    {
+                        editingCapital
+                            ? <WInput
+                                className='table-input' onBlur={handleCapitalEdit}
+                                autoFocus={true} defaultValue={capital} type='text'
+                                wType="outlined" inputClass="table-input-class"
+                            />
+                            : <div className="table-text"
+                                onClick={() => toggleCapitalEdit(!editingCapital)}
+                            >{capital}
+                            </div>
+                    }
+                </WCol>
+                <WCol size='2' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                    {
+                        editingLeader
+                            ? <WInput
+                                className='table-input' onBlur={handleLeaderEdit}
+                                autoFocus={true} defaultValue={leader} type='text'
+                                wType="outlined" inputClass="table-input-class"
+                            />
+                            : <div className="table-text"
+                                onClick={() => toggleLeaderEdit(!editingLeader)}
+                            >{leader}
+                            </div>
+                    }
                 </WCol>
                 <WCol size='2' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                     flag here
                 </WCol>
-                <WCol size='3' style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center'}}>
-                    landmarks...
+                <WCol size='3' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden'}}>
+                    {props.entry.landmarks.length > 0 ? props.entry.landmarks.toString() : 'No landmarks'}
                 </WCol>
             </WRow>
         </WCard>

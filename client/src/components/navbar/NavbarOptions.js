@@ -66,6 +66,7 @@ const NavbarOptions = (props) => {
         } else {
             history.push('/welcome');
         }
+        props.clearTPS();
     }
 
     let breadcrumbs;
@@ -78,14 +79,14 @@ const NavbarOptions = (props) => {
             if (props.activeRegion.parentRegion.parentRegion === null){
                 breadcrumbs = 
                 <Link to={{ pathname: `/maps/${props.activeRegion.parentRegion._id}`}}>
-                    <WButton>
+                    <WButton onClick={props.clearTPS}>
                         {props.activeRegion.parentRegion.name}
                     </WButton>
                 </Link>;
             } else {
                 breadcrumbs = 
                     <Link to={{ pathname: `/regions/${props.activeRegion.parentRegion._id}`}}>
-                        <WButton >
+                        <WButton onClick={props.clearTPS} >
                             {props.activeRegion.parentRegion.name}
                         </WButton>
                     </Link>;
