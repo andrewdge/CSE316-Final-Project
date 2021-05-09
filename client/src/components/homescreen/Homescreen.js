@@ -10,7 +10,7 @@ import * as mutations 					from '../../cache/mutations';
 import { useMutation, useQuery, useLazyQuery } 		from '@apollo/client';
 import Welcome from '../welcome/Welcome';
 import { Switch, Route, Redirect } from 'react-router-dom';
-import { UpdateRegion_Transaction } from '../../utils/jsTPS';
+import { UpdateRegion_Transaction, EditRegion_Transaction } from '../../utils/jsTPS';
 
 
 const Homescreen = (props) => {
@@ -52,6 +52,7 @@ const Homescreen = (props) => {
 
     const refetchRegions= async () => {
         const {loading, error, data } = await regionRefetch();
+        console.log(data);
         if (error) { console.log(error);}
 		if (data) {
 			activeRegion = data.getRegionById;
@@ -142,12 +143,9 @@ const Homescreen = (props) => {
     }
 
     const editRegion = async (_id, field, value, prev) => {
-        let flag = 0;
-		if (field === 'completed') flag = 1;
-		// let listID = activeList._id;
-		// let transaction = new EditItem_Transaction(listID, itemID, field, prev, value, flag, UpdateTodoItemField);
-		// props.tps.addTransaction(transaction);
-		// tpsRedo();
+		let transaction = new EditRegion_Transaction(_id, field, value, prev, UpdateRegion);
+		props.tps.addTransaction(transaction);
+		tpsRedo();
     }
 
     const deleteSubregion = async (entry) => {
@@ -171,6 +169,7 @@ const Homescreen = (props) => {
         console.log(regionsToDelete);
     }
 
+    //TODO: Regions to delete not working for hard deletion of nested regions
     const clearTPS = () => {
         console.log('cleared tps');
         props.tps.clearAllTransactions();
@@ -205,6 +204,7 @@ const Homescreen = (props) => {
                             deleteSubregion={deleteSubregion} editRegion={editRegion} canUndo={canUndo} canRedo={canRedo}
                             undo={tpsUndo} redo={tpsRedo} activeRegion={activeRegion} subregions={subregions} 
                             getRegionById={getRegionById} regionRefetch={regionRefetch} clearTPS={clearTPS}
+                            editRegion={editRegion}
                         />
                     </Route>
                     <Route exact path='/regions/:_id' name='regions'>
@@ -213,6 +213,7 @@ const Homescreen = (props) => {
                             deleteSubregion={deleteSubregion} editRegion={editRegion} canUndo={canUndo} canRedo={canRedo}
                             undo={tpsUndo} redo={tpsRedo} activeRegion={activeRegion} subregions={subregions}
                             getRegionById={getRegionById} regionRefetch={regionRefetch} clearTPS={clearTPS}
+                            editRegion={editRegion}
                         />
                     </Route>
                     <Route exact path='/regionviewer/:_id' name='regionviewer'>

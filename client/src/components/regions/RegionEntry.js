@@ -15,21 +15,21 @@ const RegionEntry = (props) => {
         toggleNameEdit(false);
         const newName = e.target.value ? e.target.value : 'Untitled Region';
         const prevName = name;
-        //props.editRegion(props.entry._id, 'name', newName, prevName);
+        props.editRegion(props.entry._id, 'name', newName, prevName);
     };
 
     const handleCapitalEdit = (e) => {
         toggleCapitalEdit(false);
         const newCapital = e.target.value ? e.target.value : 'Untitled Capital';
         const prevCapital = capital;
-        //props.editRegion(props.entry._id, 'capital', newCapital, prevCapital);
+        props.editRegion(props.entry._id, 'capital', newCapital, prevCapital);
     };
 
     const handleLeaderEdit = (e) => {
         toggleLeaderEdit(false);
         const newLeader = e.target.value ? e.target.value : 'Unnamed Leader';
         const prevLeader = leader;
-        //props.editRegion(props.entry._id, 'leader', newLeader, prevLeader);
+        props.editRegion(props.entry._id, 'leader', newLeader, prevLeader);
     };
 
 
