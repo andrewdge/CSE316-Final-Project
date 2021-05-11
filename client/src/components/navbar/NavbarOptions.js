@@ -2,7 +2,7 @@ import React, { useEffect }                                from 'react';
 import { LOGOUT }                           from '../../cache/mutations';
 import { useMutation, useApolloClient}     from '@apollo/client';
 import { WButton, WNavItem, WNavbar, WRow, WCol }                from 'wt-frontend';
-import { Link, useHistory, useParams}  from 'react-router-dom';
+import { Link, useHistory, useLocation, useParams}  from 'react-router-dom';
 import Logo from './Logo';
 
 const LoggedIn = (props) => {
@@ -59,6 +59,7 @@ const LoggedOut = (props) => {
 const NavbarOptions = (props) => {
 
     let history = useHistory();
+    let location = useLocation();
 
     const goHome = () => {
         if (props.auth){
@@ -66,31 +67,102 @@ const NavbarOptions = (props) => {
         } else {
             history.push('/welcome');
         }
-        props.clearTPS();
+        if (location.pathname !== '/home'){
+            props.clearTPS();
+        }
     }
 
     let breadcrumbs;
-    // console.log(props.activeRegion);
     if (props.activeRegion){
-        if (props.activeRegion.parentRegion === null){
-            breadcrumbs = 
-                        <></>;
-        } else {
-            if (props.activeRegion.parentRegion.parentRegion === null){
+        if (props.lineage.length > 0 ){
+            if (props.lineage.length === 1){
                 breadcrumbs = 
-                <Link to={{ pathname: `/maps/${props.activeRegion.parentRegion._id}`}}>
-                    <WButton onClick={props.clearTPS}>
-                        {props.activeRegion.parentRegion.name}
-                    </WButton>
-                </Link>;
+                    <Link to={{ pathname: `/maps/${props.lineage[0]._id}`}} onClick={props.clearTPS}>
+                        <WButton>
+                            {props.lineage[0].name}
+                        </WButton>
+                    </Link>
+                    ;
+            } else if (props.lineage.length < 6){
+                breadcrumbs = props.lineage.map( (parent, index) => 
+                            index !== props.lineage.length-1 ? 
+                            ( 
+                                <>
+                                    <Link to={{ pathname: `/maps/${parent._id}`}} onClick={props.clearTPS}>
+                                        <WButton>
+                                            {parent.name}
+                                        </WButton>
+                                    </Link>
+                                    <div>
+                                        {'>'}
+                                    </div>
+                                </>
+                            )
+                            :
+                            <Link to={{ pathname: `/maps/${parent._id}`}} onClick={props.clearTPS}>
+                                <WButton >
+                                    {parent.name}
+                                </WButton>
+                            </Link>
+                            
+                            );
             } else {
                 breadcrumbs = 
-                    <Link to={{ pathname: `/regions/${props.activeRegion.parentRegion._id}`}}>
-                        <WButton onClick={props.clearTPS} >
-                            {props.activeRegion.parentRegion.name}
+                    <>
+                        <Link to={{ pathname: `/maps/${props.lineage[0]._id}`}} onClick={props.clearTPS}>
+                            <WButton>
+                                {props.lineage[0].name}
+                            </WButton>
+                        </Link>
+                        <div>
+                            {'>'}
+                        </div>
+                        <Link to={{ pathname: `/maps/${props.lineage[1]._id}`}} onClick={props.clearTPS}>
+                            <WButton>
+                                {props.lineage[1].name}
+                            </WButton>
+                        </Link>
+                        <div>
+                            {'>'}
+                        </div>
+                        <Link to={{ pathname: `/maps/${props.lineage[2]._id}`}} onClick={props.clearTPS}>
+                            <WButton>
+                                {props.lineage[2].name}
+                            </WButton>
+                        </Link>
+                        <div>
+                            {'>'}
+                        </div>
+                        <WButton>
+                            {`...`}
                         </WButton>
-                    </Link>;
+                        <div>
+                            {`>`}
+                        </div>
+                        <Link to={{ pathname: `/maps/${props.lineage[props.lineage.length-3]._id}`}} onClick={props.clearTPS}>
+                            <WButton>
+                                {props.lineage[props.lineage.length-3].name}
+                            </WButton>
+                        </Link>
+                        <div>
+                            {'>'}
+                        </div>
+                        <Link to={{ pathname: `/maps/${props.lineage[props.lineage.length-2]._id}`}} onClick={props.clearTPS}>
+                            <WButton>
+                                {props.lineage[props.lineage.length-2].name}
+                            </WButton>
+                        </Link>
+                        <div>
+                            {'>'}
+                        </div>
+                        <Link to={{ pathname: `/maps/${props.lineage[props.lineage.length-1]._id}`}} onClick={props.clearTPS}>
+                            <WButton>
+                                {props.lineage[props.lineage.length-1].name}
+                            </WButton>
+                        </Link>
+                    </>;
             }
+            
         }
     }
 
@@ -103,9 +175,6 @@ const NavbarOptions = (props) => {
                 </WButton>
             </WNavItem>
             <WNavItem>
-                {/* <div style ={{ display: 'flex' }}>
-                    {activeMap}
-                </div> */}
                 {breadcrumbs}
             </WNavItem>
             <WNavbar color='colored'>

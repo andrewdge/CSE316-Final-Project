@@ -24,7 +24,7 @@ const MapContents = (props) => {
         <WLayout wLayout='header'>
             <WLHeader>
                 <NavbarOptions 
-                    user={props.user} fetchUser={props.fetchUser} auth={props.auth} 
+                    user={props.user} fetchUser={props.fetchUser} auth={props.auth}
                 />
             </WLHeader>
             <WLMain>

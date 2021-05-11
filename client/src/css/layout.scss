@@ -104,13 +104,13 @@ html {
     height: 40px;
 }
 
-.table-input, .table-select {
+.table-input, .table-select, .landmark-input {
     height: 100%;
     display: flex;
     align-items: center;
 }
 
-.table-input-class {
+.table-input-class, .landmark-input-class {
     padding-left: 0px !important;
     padding-right: 0px !important;
 }

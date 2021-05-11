@@ -103,3 +103,27 @@ export const MOVE_MAP_TO_TOP = gql`
 		}
 	}
 `;
+
+export const ADD_LANDMARK = gql`
+	mutation AddLandmark($landmark: LandmarkInput!, $landmarkExists: Boolean!) {
+		addLandmark(landmark: $landmark, landmarkExists: $landmarkExists)
+	}
+`;
+
+export const UPDATE_LANDMARK = gql`
+	mutation UpdateLandmark($_id: String!, $field: String!, $value: String!) {
+		updateLandmark(_id: $_id, field: $field, value: $value)
+	}
+`;
+
+export const DELETE_LANDMARK = gql`
+	mutation DeleteLandmark($_id: String!) {
+		deleteLandmark(_id: $_id) {
+			_id
+			name
+			location
+			parentRegion
+			owner
+		}
+	}
+`;

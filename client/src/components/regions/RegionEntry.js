@@ -40,9 +40,9 @@ const RegionEntry = (props) => {
         await props.regionRefetch();
     }
 
-    const goToSubregion = () => {
-        history.push(`/regions/${props.entry._id}`);
+    const goToSubregion = async () => {
         props.clearTPS();
+        await props.regionRefetch();
     }
 
     return (
@@ -104,7 +104,7 @@ const RegionEntry = (props) => {
                     flag here
                 </WCol>
                 <WCol size='3' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden'}}>
-                    {props.entry.landmarks.length > 0 ? props.entry.landmarks.toString() : 'No landmarks'}
+                    {props.entry.landmarks.length > 0 ? props.entry.landmarks.map(entry => entry.name) : 'No landmarks'}
                 </WCol>
             </WRow>
         </WCard>

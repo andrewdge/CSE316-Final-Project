@@ -41,6 +41,23 @@ export const GET_DB_REGIONS = gql`
 	}
 `;
 
+export const GET_LINEAGE = gql`
+	query GetLineage($_id: String!) {
+		getLineage(_id: $_id) {
+			_id
+			name
+			capital
+			leader
+			flag
+			parentRegion
+			subregions
+			landmarks
+			sortId
+			owner
+		}
+	}
+`;
+
 export const GET_REGION_BY_ID = gql`
 	query GetRegionById($_id: String!) {
 		getRegionById(_id: $_id) {
@@ -66,7 +83,13 @@ export const GET_REGION_BY_ID = gql`
 				sortId
 				owner
 			}
-			landmarks
+			landmarks {
+				_id
+				name 
+				location
+				parentRegion
+				owner
+			}
 			sortId
 			owner
 		}

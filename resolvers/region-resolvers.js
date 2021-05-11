@@ -1,5 +1,6 @@
 const ObjectId = require('mongoose').Types.ObjectId;
 const Region = require('../models/region-model');
+const Landmark = require('../models/landmark-model');
 
 module.exports = {
     Query: {
@@ -12,13 +13,12 @@ module.exports = {
         getAllRegions: async (_, __, { req }) => {
             const _id = new ObjectId(req.userId);
 			if(!_id) { return([])};
-			const maps = await Region.find({ owner: _id, parentRegion: {$ne: null} });
-			if(maps) return (maps);
+			const regions = await Region.find({ owner: _id, parentRegion: {$ne: null} });
+			if(regions) return (regions);
         },
         getRegionById: async ( _, args ) => {
             const { _id } = args;
             const objectId = new ObjectId(_id);
-            // ???????????????????????
             let region = await (await Region.findOne({_id: objectId})).toJSON();
             let subregions = region.subregions;
             for (i = 0; i < subregions.length; i++) {
@@ -29,9 +29,35 @@ module.exports = {
                 let parentRegion = await (await Region.findOne({_id: region.parentRegion })).toJSON();
                 region.parentRegion = parentRegion;
             }
+            let landmarks = region.landmarks;
+            for (i = 0; i < landmarks.length; i++) {
+                landmarks[i] = await Landmark.findOne({_id: landmarks[i] });
+            }
+            region.landmarks = landmarks;
             if (region) return region;
             else return {};
         },
+        getLineage: async ( _, args) => {
+            const { _id } = args;
+            const objectId = new ObjectId(_id);
+            const region = await Region.findOne({ _id: objectId });
+            let lineage = [];
+            if (region) {
+                const getParent = async (_id) => {
+                    const objectId = new ObjectId(_id);
+                    const parent = await Region.findOne({ _id: objectId });
+                    if (parent) {
+                        lineage.unshift(parent);
+                        await getParent(parent.parentRegion);
+                    }
+                }
+
+                await getParent(region.parentRegion);
+                if (lineage) return lineage;
+            } else {
+                return ([]);
+            }
+        }
     },
     Mutation: {
         addRegion: async ( _, args ) => {
@@ -138,7 +164,7 @@ module.exports = {
 			const replace = await Region.insertMany(sorted);
 			return replace;
         },
-        sortRegionsByCriteria: async ( _, args) => {
+        sortRegionsByCriteria: async  (_, args) => {
             const { _id, isAscending, criteria, doUndo, subregions } = args;
             const objectId = new ObjectId(_id);
 			const region = await Region.findOne({ _id: objectId});
@@ -157,6 +183,53 @@ module.exports = {
 				if (updated) return (subregions);
 				else return (region.subregions);
 			}
-        }
+        },
+        addLandmark: async (_, args) => {
+            const { landmark, landmarkExists } = args;
+            let objectId;
+            if (landmarkExists){
+                objectId = new ObjectId(landmark._id);
+            } else {
+                objectId = new ObjectId();
+            }
+            const { name, location, parentRegion, owner } = landmark;
+            const newLandmark = new Landmark({
+                _id: objectId,
+                name: name,
+                location: location,
+                parentRegion: parentRegion,
+                owner: owner
+            });
+            const added = await newLandmark.save();
+            const parent = await Region.findOne({ _id: parentRegion});
+            const landmarks = parent.landmarks;
+            landmarks.push(objectId);
+            const updated = await Region.updateOne({ _id: parentRegion }, { landmarks: landmarks });
+            const objectString = objectId.toString();
+            if (added){
+                return objectString;
+            }
+            else return '';
+        }, 
+        deleteLandmark: async ( _, args ) => {
+            const { _id } = args;
+            const objectId = new ObjectId(_id);
+            const landmark = await Landmark.findOne({_id: objectId});
+            // delete ref in parent's subregions field
+            const parent = await Region.findOne({_id: landmark.parentRegion});
+            let landmarks = parent.landmarks;
+            landmarks = landmarks.filter(landmark => landmark._id.toString() !== _id);
+            await Region.updateOne({_id: landmark.parentRegion }, { landmarks: landmarks});
+            let deleted = await Landmark.deleteOne({ _id: objectId });
+            if (deleted) return landmark;
+            else return null;
+        },
+        updateLandmark: async ( _, args ) => {
+            const { _id, field, value } = args; 
+            const objectId = new ObjectId(_id);
+            const updated = await Landmark.updateOne({ _id: objectId }, { [field]: value });
+            if (updated) return value;
+            else return "";
+        },
     }
 }

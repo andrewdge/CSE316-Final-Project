@@ -18,7 +18,6 @@ export class UpdateRegion_Transaction extends jsTPS_Transaction {
         this.opcode === 0 ? { data } = await this.deleteFunction({ variables: { _id: this.region._id }})
 						  : { data } = await this.addFunction({ variables: { region: this.region, regionExists: false }});  
         if(this.opcode !== 0) {
-            console.log(data);
             this.region._id = data.addRegion;
         }
 		return data;
@@ -79,6 +78,36 @@ export class SortRegionsByCriteria_Transaction extends jsTPS_Transaction {
 
     async undoTransaction() {
 		const { data } = await this.updateFunction({ variables: { _id: this._id, isAscending: this.isAscending, criteria: this.criteria, doUndo: "undo", subregions: this.subregions }});
+		return data;
+    }
+}
+
+export class UpdateLandmark_Transaction extends jsTPS_Transaction {
+    // opcodes: 0 - delete, 1 - add 
+    constructor(landmark, opcode, addfunc, delfunc) {
+        super();
+		this.landmark = landmark;
+        this.addFunction = addfunc;
+        this.deleteFunction = delfunc;
+        this.opcode = opcode;
+    }
+    async doTransaction() {
+		let data;
+        this.opcode === 0 ? { data } = await this.deleteFunction({ variables: { _id: this.landmark._id }})
+						  : { data } = await this.addFunction({ variables: { landmark: this.landmark, landmarkExists: false }});  
+        if(this.opcode !== 0) {
+            this.landmark._id = data.addLandmark;
+        }
+		return data;
+    }
+    // Since delete/add are opposites, flip matching opcode
+    async undoTransaction() {
+		let data;
+        this.opcode === 1 ? { data } = await this.deleteFunction({ variables: { _id: this.landmark._id }})
+                          : { data } = await this.addFunction({ variables: { landmark: this.landmark, landmarkExists: true }});
+        if(this.opcode !== 0) {
+            this.landmark._id = data.addLandmark;
+        }
 		return data;
     }
 }

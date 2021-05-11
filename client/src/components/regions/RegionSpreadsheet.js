@@ -16,9 +16,11 @@ const RegionSpreadsheet = (props) => {
     const [isCapitalAscending, capitalToggleAscending] = useState(false);
     const [isLeaderAscending, leaderToggleAscending] = useState(false);
     
-    useEffect(() => {
-        props.getRegionById({ variables: { _id: _id}});
+    useEffect(async () => {
+        await props.getRegionById({ variables: { _id: _id }});
+        await props.getLineage({ variables: {_id: _id }});
     }, [props.subregions, _id]);
+
     
     const addNewRegion = async () => {
         await props.addNewRegion(_id);
@@ -47,10 +49,11 @@ const RegionSpreadsheet = (props) => {
                     <WLHeader>
                         <NavbarOptions 
                             user={props.user} fetchUser={props.fetchUser} auth={props.auth} activeRegion={props.activeRegion} clearTPS={props.clearTPS}
+                            lineage={props.lineage}
                         />
                     </WLHeader>
                     <WLMain>
-                        <div style={{ height: '100%', width: '100%'}}>
+                        <div style={{ height: '90%', width: '100%'}}>
                             <WRow style={{ width: '90%', marginTop: '2%', marginLeft: '5%'}}>
                                 <WCol size='2'>
                                     <WRow>
@@ -75,7 +78,7 @@ const RegionSpreadsheet = (props) => {
                                 </WCol>
                                 <WCol size='6' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'white', fontSize: '20px'}}>
                                     Region name: 
-                                    <Link to={{ pathname: `/regionviewer/${props.activeRegion._id}` }} >
+                                    <Link to={{ pathname: `/regionviewer/${props.activeRegion._id}` }} onClick={props.clearTPS}>
                                         <WButton wType='texted' color='success' hoverAnimation='darken' clickAnimation='ripple-light' >
                                             {props.activeRegion.name}
                                         </WButton>

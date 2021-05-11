@@ -5,12 +5,15 @@ import CreateAccount from '../modals/CreateAccount';
 import MapContents from '../maps/MapContents';
 import RegionSpreadsheet from '../regions/RegionSpreadsheet';
 import RegionViewer from '../regions/RegionViewer';
-import { GET_DB_MAPS, GET_DB_REGIONS, GET_REGION_BY_ID } 				from '../../cache/queries';
+import { GET_DB_MAPS, GET_DB_REGIONS, GET_LINEAGE, GET_REGION_BY_ID } 				from '../../cache/queries';
 import * as mutations 					from '../../cache/mutations';
 import { useMutation, useQuery, useLazyQuery } 		from '@apollo/client';
 import Welcome from '../welcome/Welcome';
 import { Switch, Route, Redirect } from 'react-router-dom';
-import { UpdateRegion_Transaction, EditRegion_Transaction, SortRegionsByCriteria_Transaction } from '../../utils/jsTPS';
+import { UpdateRegion_Transaction, EditRegion_Transaction, SortRegionsByCriteria_Transaction, 
+         UpdateLandmark_Transaction,
+       } from '../../utils/jsTPS';
+import { typeFromAST } from 'graphql';
 
 
 const Homescreen = (props) => {
@@ -19,15 +22,19 @@ const Homescreen = (props) => {
     let regions = [];
     let activeRegion = null;
     let subregions = null;
+    let lineage = [];
     let regionsToDelete = [];
-    const [canUndo, setUndo]                = useState(false);
-    const [canRedo, setRedo]                = useState(false);
-    const [AddRegion]                       = useMutation(mutations.ADD_REGION);
-    const [UpdateRegion]                    = useMutation(mutations.UPDATE_REGION);
-    const [DeleteRegion]                    = useMutation(mutations.DELETE_REGION);
-    const [TempDeleteRegion]                = useMutation(mutations.TEMP_DELETE_REGION);
-    const [MoveMapToTop]                    = useMutation(mutations.MOVE_MAP_TO_TOP);
-    const [SortRegionsByCriteria]           = useMutation(mutations.SORT_REGIONS_BY_CRITERIA);
+    const [canUndo, setUndo]                  = useState(false);
+    const [canRedo, setRedo]                  = useState(false);
+    const [AddRegion]                         = useMutation(mutations.ADD_REGION);
+    const [UpdateRegion]                      = useMutation(mutations.UPDATE_REGION);
+    const [DeleteRegion]                      = useMutation(mutations.DELETE_REGION);
+    const [TempDeleteRegion]                  = useMutation(mutations.TEMP_DELETE_REGION);
+    const [MoveMapToTop]                      = useMutation(mutations.MOVE_MAP_TO_TOP);
+    const [SortRegionsByCriteria]             = useMutation(mutations.SORT_REGIONS_BY_CRITERIA);
+    const [AddLandmark]                       = useMutation(mutations.ADD_LANDMARK);
+    const [DeleteLandmark]                    = useMutation(mutations.DELETE_LANDMARK);
+    const [UpdateLandmark]                    = useMutation(mutations.UPDATE_LANDMARK);
 
     // const GetDBRegions = useQuery(GET_DB_REGIONS);
     // if(GetDBRegions.error) { console.log(GetDBRegions.error); }
@@ -51,9 +58,17 @@ const Homescreen = (props) => {
         subregions = activeRegion.subregions;
     }
 
+    const [getLineage, {loading: lineageLoading, error: lineageError, data: lineageData, refetch: lineageRefetch}] = useLazyQuery(GET_LINEAGE);
+    if (lineageError) {
+        console.log(lineageError);
+    }
+    if (lineageData){
+        lineage = lineageData.getLineage;
+    }
+
     const refetchRegions= async () => {
         const {loading, error, data } = await regionRefetch();
-        console.log(data);
+        //console.log(data);
         if (error) { console.log(error);}
 		if (data) {
 			activeRegion = data.getRegionById;
@@ -178,17 +193,55 @@ const Homescreen = (props) => {
         console.log(regionsToDelete);
     }
 
+    const addLandmark = async (parentID, name, location) => {
+        const newLandmark= {
+            _id: '',
+            name: name !== '' ? name : 'Untitled Landmark',
+            location: location,
+            parentRegion: parentID,
+            owner: props.user._id
+        }
+        let opcode = 1;
+		let transaction = new UpdateLandmark_Transaction(newLandmark, opcode, AddLandmark, DeleteLandmark);
+		props.tps.addTransaction(transaction);
+		tpsRedo();
+    }
+
+    const editLandmark = async (_id, field, value, prev) => {
+		let transaction = new EditRegion_Transaction(_id, field, value, prev, UpdateLandmark);
+		props.tps.addTransaction(transaction);
+		tpsRedo();
+    }
+
+    const deleteLandmark =  (entry) => {
+        const deletedLandmark = {
+            _id: entry._id,
+            name: entry.name,
+            location: entry.location,
+            parentRegion: entry.parentRegion,
+            owner: entry.owner
+        }
+        let opcode = 0;
+		let transaction = new UpdateLandmark_Transaction(deletedLandmark, opcode, AddLandmark, DeleteLandmark);
+		props.tps.addTransaction(transaction);
+		tpsRedo();
+    }
+
     //TODO: Regions to delete not working for hard deletion of nested regions
-    const clearTPS = () => {
-        console.log('cleared tps');
+    const clearTPS = async () => {
         props.tps.clearAllTransactions();
         pollUndo();
         pollRedo();
-        console.log(regionsToDelete);
-        regionsToDelete.forEach(region => {
+        // console.log('deleting');
+        // console.log(regionsToDelete);
+        regionsToDelete.forEach( async(region) => {
+            await AddRegion({ variables: { region: region, regionExists: true }});
+        });
+        regionsToDelete.forEach( async(region) => {
             DeleteRegion({ variables: { _id: region._id}, refetchQueries: [{ query: GET_DB_REGIONS}] });
         });
         regionsToDelete = [];
+        await refetchRegions();
     }
 
 
@@ -213,7 +266,7 @@ const Homescreen = (props) => {
                             deleteSubregion={deleteSubregion} editRegion={editRegion} canUndo={canUndo} canRedo={canRedo}
                             undo={tpsUndo} redo={tpsRedo} activeRegion={activeRegion} subregions={subregions} 
                             getRegionById={getRegionById} regionRefetch={regionRefetch} clearTPS={clearTPS}
-                            editRegion={editRegion} sortRegions={sortRegionsByCriteria}
+                            editRegion={editRegion} sortRegions={sortRegionsByCriteria} getLineage={getLineage} lineage={lineage}
                         />
                     </Route>
                     <Route exact path='/regions/:_id' name='regions'>
@@ -222,12 +275,15 @@ const Homescreen = (props) => {
                             deleteSubregion={deleteSubregion} editRegion={editRegion} canUndo={canUndo} canRedo={canRedo}
                             undo={tpsUndo} redo={tpsRedo} activeRegion={activeRegion} subregions={subregions}
                             getRegionById={getRegionById} regionRefetch={regionRefetch} clearTPS={clearTPS}
-                            editRegion={editRegion} sortRegions={sortRegionsByCriteria}
+                            editRegion={editRegion} sortRegions={sortRegionsByCriteria} getLineage={getLineage} lineage={lineage}
                         />
                     </Route>
                     <Route exact path='/regionviewer/:_id' name='regionviewer'>
                         <RegionViewer
-                            fetchUser={props.fetchUser} user={props.user} auth={auth}
+                            fetchUser={props.fetchUser} user={props.user} auth={auth} activeRegion={activeRegion} subregions={subregions}
+                            getRegionById={getRegionById} regionRefetch={regionRefetch} getLineage={getLineage} lineage={lineage} 
+                            clearTPS={clearTPS} regionRefetch={regionRefetch} canUndo={canUndo} canRedo={canRedo} undo={tpsUndo} redo={tpsRedo}
+                            addLandmark={addLandmark} deleteLandmark={deleteLandmark} editLandmark={editLandmark}
                         />
                     </Route>
                     <Redirect from="/" to={ {pathname: "/home"} } />

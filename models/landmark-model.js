@@ -12,6 +12,14 @@ const landmarkSchema = new Schema(
         },
         location: {
             type: String,
+            required: false
+        },
+        parentRegion: {
+            type: ObjectId,
+            required: true
+        },
+        owner: {
+            type: String,
             required: true
         }
 	},

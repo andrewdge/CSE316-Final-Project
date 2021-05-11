@@ -16,6 +16,8 @@ const typeDefs = gql `
 	type Landmark {
 		_id: String!
 		name: String!
+		location: String!
+		parentRegion: String!
 		owner: String!
 	}
 
@@ -40,7 +42,7 @@ const typeDefs = gql `
 		flag: String
 		parentRegion: Region
 		subregions: [Region]
-		landmarks: [String]
+		landmarks: [Landmark]
 		sortId: Int!
 		owner: String!
 	}
@@ -48,6 +50,8 @@ const typeDefs = gql `
 	input LandmarkInput {
 		_id: String
 		name: String
+		location: String
+		parentRegion: String
 		owner: String
 	}
 
@@ -55,6 +59,7 @@ const typeDefs = gql `
 		getAllMaps: [Region]
 		getAllRegions: [Region]
 		getRegionById(_id: String!): RegionResponse
+		getLineage(_id: String!): [Region]
 		# getLandmarkById(_id: String!): Landmark
 	}
 	extend type Mutation {
@@ -64,8 +69,9 @@ const typeDefs = gql `
 		tempDeleteRegion(_id: String!): Region
 		deleteRegion(_id: String!): Boolean
 		moveMapToTop(_id: String!): [Region]
-		# addLandmark(_id: String!, landmark: LandmarkInput!): String
-		# updateLandmark(_id: String!, field: String!, value: String!): String
+		addLandmark(landmark: LandmarkInput!, landmarkExists: Boolean!): String
+		updateLandmark(_id: String!, field: String!, value: String!): String
+		deleteLandmark(_id: String!): Landmark
 	}
 `;
 
