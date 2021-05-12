@@ -36,14 +36,14 @@ const typeDefs = gql `
 
 	type RegionResponse {
 		_id: String!
-		name: String!
+		name: String
 		capital: String
 		leader: String
 		flag: String
 		parentRegion: Region
-		subregions: [Region]
+		subregions: [RegionResponse]
 		landmarks: [Landmark]
-		sortId: Int!
+		sortId: Int
 		owner: String!
 	}
 

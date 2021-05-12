@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useLazyQuery } from '@apollo/client';
 import { WCard, WRow, WCol, WLayout, WLMain, WLHeader, WButton, WCHeader, WCContent, WInput } from 'wt-frontend';
 import NavbarOptions from '../navbar/NavbarOptions';
-import { useParams, useHistory, Link } from 'react-router-dom';
+import { useParams, useHistory, Link, useLocation } from 'react-router-dom';
 import { GET_REGION_BY_ID } 				from '../../cache/queries';
 import LandmarkEntry from '../landmarks/LandmarkEntry';
 
@@ -10,11 +10,12 @@ const RegionViewer = (props) => {
 
     let { _id } = useParams();
     let history = useHistory();
+    let location = useLocation();
 
-    useEffect(() => {
-        props.getRegionById({ variables: { _id: _id}});
-        props.getLineage({ variables: {_id: _id }});
-    }, [props.subregions, _id]);
+    useEffect(async () => {
+        await props.getRegionById({ variables: { _id: _id}});
+        await props.getLineage({ variables: {_id: _id }});
+    }, [props.subregions, _id, location.pathname]);
 
     const [landmarkName, setLandmarkName] = useState('');
     const [events, setEvents] = useState([]);

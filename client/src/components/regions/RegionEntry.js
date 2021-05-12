@@ -32,6 +32,8 @@ const RegionEntry = (props) => {
         props.editRegion(props.entry._id, 'leader', newLeader, prevLeader);
     };
 
+    console.log(props.entry);
+
 
     const history = useHistory();
 
@@ -44,6 +46,11 @@ const RegionEntry = (props) => {
         props.clearTPS();
         await props.regionRefetch();
     }
+
+    let landmarks;
+    if (props.entry.landmarks.length == 0) landmarks = 'No Landmarks';
+    if (props.entry.landmarks.length == 1) landmarks = props.entry.landmarks.map(entry => entry.name);
+    else landmarks = props.entry.landmarks.map((entry, index) => index !== props.entry.landmarks.length-1 ? entry.name + ", " : entry.name);
 
     return (
         <WCard style={{ height: '60px', width: '100%', borderStyle: 'solid' }}>
@@ -104,7 +111,7 @@ const RegionEntry = (props) => {
                     flag here
                 </WCol>
                 <WCol size='3' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden'}}>
-                    {props.entry.landmarks.length > 0 ? props.entry.landmarks.map(entry => entry.name) : 'No landmarks'}
+                    {landmarks}
                 </WCol>
             </WRow>
         </WCard>

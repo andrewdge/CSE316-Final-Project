@@ -20,10 +20,14 @@ module.exports = {
             const { _id } = args;
             const objectId = new ObjectId(_id);
             let region = await (await Region.findOne({_id: objectId})).toJSON();
-            let subregions = region.subregions;
-            for (i = 0; i < subregions.length; i++) {
-                subregions[i] = await Region.findOne({_id: subregions[i]});
-            }
+            let subregions = await Promise.all(region.subregions.map( async (subregion) => {
+                let sub = await (await Region.findOne({_id: subregion})).toJSON();
+                let landmarks = await Promise.all(sub.landmarks.map( async (landmark) => {
+                    return await Landmark.findOne({_id: landmark });
+                }));
+                sub.landmarks = landmarks;
+                return sub;
+            }));
             region.subregions = subregions;
             if (region.parentRegion !== null){
                 let parentRegion = await (await Region.findOne({_id: region.parentRegion })).toJSON();

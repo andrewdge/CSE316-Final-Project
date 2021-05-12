@@ -11,6 +11,7 @@ const RegionSpreadsheet = (props) => {
 
     let { _id } = useParams();
     let history = useHistory();
+    let location = useLocation();
 
     const [isNameAscending, nameToggleAscending] = useState(false);
     const [isCapitalAscending, capitalToggleAscending] = useState(false);
@@ -19,28 +20,32 @@ const RegionSpreadsheet = (props) => {
     useEffect(async () => {
         await props.getRegionById({ variables: { _id: _id }});
         await props.getLineage({ variables: {_id: _id }});
-    }, [props.subregions, _id]);
-
+    }, [props.subregions, _id, location.pathname]);
     
     const addNewRegion = async () => {
         await props.addNewRegion(_id);
         await props.regionRefetch();
     }
 
-    const nameReorder = () => {
+    const nameReorder = async () => {
         props.sortRegions(props.activeRegion._id, isNameAscending, "name", props.activeRegion.subregions);
         nameToggleAscending(!isNameAscending);
+        await props.regionRefetch();
     }
 
-    const capitalReorder = () => {
+    const capitalReorder = async () => {
         props.sortRegions(props.activeRegion._id, isCapitalAscending, "capital", props.activeRegion.subregions);
         capitalToggleAscending(!isCapitalAscending);
+        await props.regionRefetch();
     }
 
-    const leaderReorder = () => {
+    const leaderReorder = async () => {
         props.sortRegions(props.activeRegion._id, isLeaderAscending, "leader", props.activeRegion.subregions);
         leaderToggleAscending(!isLeaderAscending);
+        await props.regionRefetch();
     }
+
+    console.log(props.activeRegion);
 
     return (
         <>
