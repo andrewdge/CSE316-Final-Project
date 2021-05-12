@@ -26,6 +26,8 @@ module.exports = {
                     return await Landmark.findOne({_id: landmark });
                 }));
                 sub.landmarks = landmarks;
+                let parent = await Region.findOne({_id: sub.parentRegion });
+                sub.parentRegion = parent;
                 return sub;
             }));
             region.subregions = subregions;

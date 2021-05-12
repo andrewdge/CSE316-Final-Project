@@ -70,6 +70,7 @@ export const GET_REGION_BY_ID = gql`
 				_id
 				name
 				parentRegion
+				owner
 			}
 			subregions {
 				_id
@@ -77,18 +78,28 @@ export const GET_REGION_BY_ID = gql`
 				capital
 				leader
 				flag
+				parentRegion {
+					_id
+					name
+				}
+				subregions {
+					_id
+				}
 				landmarks {
 					_id
 					name 
 					location
 					parentRegion
 				}
+				sortId
+				owner
 			}
 			landmarks {
 				_id
 				name 
 				location
 				parentRegion
+				owner
 			}
 			owner
 		}

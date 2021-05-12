@@ -166,14 +166,18 @@ const Homescreen = (props) => {
 
     const sortRegionsByCriteria = async(_id, isAscending, criteria, subregions) => {
 		//remove typename cuz it sucks
+        console.log(subregions);
 		let cleanedSubregions = subregions.map(({ __typename, ...rest}) => rest);
+        for (let i = 0; i < cleanedSubregions.length; i++){
+            cleanedSubregions[i].parentRegion = cleanedSubregions[i].parentRegion._id;
+        }
 		let transaction = new SortRegionsByCriteria_Transaction(_id, isAscending, criteria, cleanedSubregions, SortRegionsByCriteria);
 		props.tps.addTransaction(transaction);
 		tpsRedo();
 	}
 
     const deleteSubregion = async (entry) => {
-        regionsToDelete.push(entry);
+        //regionsToDelete.push(entry);
         const deletedRegion = {
             _id: entry._id,
             name: entry.name,
@@ -190,7 +194,7 @@ const Homescreen = (props) => {
 		let transaction = new UpdateRegion_Transaction(deletedRegion, opcode, AddRegion, TempDeleteRegion);
 		props.tps.addTransaction(transaction);
 		tpsRedo();
-        console.log(regionsToDelete);
+        //console.log(regionsToDelete);
     }
 
     const addLandmark = async (parentID, name, location) => {
@@ -265,7 +269,7 @@ const Homescreen = (props) => {
                             fetchUser={props.fetchUser} user={props.user} auth={auth} addNewRegion={addNewRegion} 
                             deleteSubregion={deleteSubregion} editRegion={editRegion} canUndo={canUndo} canRedo={canRedo}
                             undo={tpsUndo} redo={tpsRedo} activeRegion={activeRegion} subregions={subregions} 
-                            getRegionById={getRegionById} regionRefetch={regionRefetch} clearTPS={clearTPS}
+                            getRegionById={getRegionById} refetchRegions={refetchRegions} clearTPS={clearTPS}
                             editRegion={editRegion} sortRegions={sortRegionsByCriteria} getLineage={getLineage} lineage={lineage}
                         />
                     </Route>
@@ -274,7 +278,7 @@ const Homescreen = (props) => {
                             fetchUser={props.fetchUser} user={props.user} auth={auth} addNewRegion={addNewRegion}
                             deleteSubregion={deleteSubregion} editRegion={editRegion} canUndo={canUndo} canRedo={canRedo}
                             undo={tpsUndo} redo={tpsRedo} activeRegion={activeRegion} subregions={subregions}
-                            getRegionById={getRegionById} regionRefetch={regionRefetch} clearTPS={clearTPS}
+                            getRegionById={getRegionById} refetchRegions={refetchRegions} clearTPS={clearTPS}
                             editRegion={editRegion} sortRegions={sortRegionsByCriteria} getLineage={getLineage} lineage={lineage}
                         />
                     </Route>

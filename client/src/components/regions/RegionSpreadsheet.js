@@ -16,35 +16,38 @@ const RegionSpreadsheet = (props) => {
     const [isNameAscending, nameToggleAscending] = useState(false);
     const [isCapitalAscending, capitalToggleAscending] = useState(false);
     const [isLeaderAscending, leaderToggleAscending] = useState(false);
+
+    const getData = async () => {
+        await props.getRegionById({ variables: { _id: _id }});
+        await props.getLineage({ variables: {_id: _id }});
+    }
     
     useEffect(() => {
-        props.getRegionById({ variables: { _id: _id }});
-        props.getLineage({ variables: {_id: _id }});
+        getData();
     }, [props.subregions, _id, location.pathname]);
     
     const addNewRegion = async () => {
         await props.addNewRegion(_id);
-        await props.regionRefetch();
+        await props.refetchRegions();
     }
 
     const nameReorder = async () => {
         props.sortRegions(props.activeRegion._id, isNameAscending, "name", props.activeRegion.subregions);
         nameToggleAscending(!isNameAscending);
-        await props.regionRefetch();
+        await props.refetchRegions();
     }
 
     const capitalReorder = async () => {
         props.sortRegions(props.activeRegion._id, isCapitalAscending, "capital", props.activeRegion.subregions);
         capitalToggleAscending(!isCapitalAscending);
-        await props.regionRefetch();
+        await props.refetchRegions();
     }
 
     const leaderReorder = async () => {
         props.sortRegions(props.activeRegion._id, isLeaderAscending, "leader", props.activeRegion.subregions);
         leaderToggleAscending(!isLeaderAscending);
-        await props.regionRefetch();
+        await props.refetchRegions();
     }
-
 
     return (
         <>
@@ -123,7 +126,7 @@ const RegionSpreadsheet = (props) => {
                                         props.subregions.map((entry, index) => (
                                             <RegionEntry 
                                                 key={entry._id} entry={entry} index={index} deleteSubregion={props.deleteSubregion} 
-                                                regionRefetch={props.regionRefetch} editRegion={props.editRegion} clearTPS={props.clearTPS}
+                                                refetchRegions={props.refetchRegions} editRegion={props.editRegion} clearTPS={props.clearTPS}
                                             />
                                         ))
                                     }

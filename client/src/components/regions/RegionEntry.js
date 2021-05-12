@@ -32,27 +32,30 @@ const RegionEntry = (props) => {
         props.editRegion(props.entry._id, 'leader', newLeader, prevLeader);
     };
 
-    console.log(props.entry);
-
 
     const history = useHistory();
 
     const deleteSubregion = async () =>{
         await props.deleteSubregion(props.entry);
-        await props.regionRefetch();
+        await props.refetchRegions();
     }
 
     const goToSubregion = async () => {
         props.clearTPS();
-        await props.regionRefetch();
+        await props.refetchRegions();
     }
 
     let landmarks;
-    if (props.entry.landmarks.length == 0) landmarks = 'No Landmarks';
-    if (props.entry.landmarks.length == 1) landmarks = props.entry.landmarks.map(entry => entry.name);
-    else landmarks = 
+    if (props.entry.landmarks.length === 0) {
+        landmarks = 'No Landmarks';
+    } else if (props.entry.landmarks.length === 1) {
+        landmarks = props.entry.landmarks[0].name;
+    } else {
+        landmarks = 
             props.entry.landmarks.map((entry, index) => 
             index !== props.entry.landmarks.length-1 ? entry.name + ", " : entry.name);
+    }
+
             
 
     return (

@@ -35,7 +35,7 @@ const typeDefs = gql `
 	}
 
 	type RegionResponse {
-		_id: String!
+		_id: String
 		name: String
 		capital: String
 		leader: String
@@ -44,7 +44,7 @@ const typeDefs = gql `
 		subregions: [RegionResponse]
 		landmarks: [Landmark]
 		sortId: Int
-		owner: String!
+		owner: String
 	}
 
 	input LandmarkInput {
