@@ -51,12 +51,9 @@ const RegionEntry = (props) => {
     if (props.entry.landmarks.length == 0) landmarks = 'No Landmarks';
     if (props.entry.landmarks.length == 1) landmarks = props.entry.landmarks.map(entry => entry.name);
     else landmarks = 
-        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', overflow: "hidden"}}>
-            {
             props.entry.landmarks.map((entry, index) => 
-            index !== props.entry.landmarks.length-1 ? entry.name + ", " : entry.name)
-            }
-        </div>
+            index !== props.entry.landmarks.length-1 ? entry.name + ", " : entry.name);
+            
 
     return (
         <WCard style={{ height: '60px', width: '100%', borderStyle: 'solid' }}>
@@ -116,8 +113,13 @@ const RegionEntry = (props) => {
                 <WCol size='2' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                     flag here
                 </WCol>
-                <WCol size='3' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden'}}>
-                    {landmarks}
+                <WCol size='3' style={{ display: 'flex'}}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '400px' }}>
+                        <div style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}>
+                            {landmarks}
+                        </div>
+                    </div>
+                    
                 </WCol>
             </WRow>
         </WCard>
