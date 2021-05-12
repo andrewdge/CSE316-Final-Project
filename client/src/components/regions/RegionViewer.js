@@ -12,9 +12,9 @@ const RegionViewer = (props) => {
     let history = useHistory();
     let location = useLocation();
 
-    useEffect(async () => {
-        await props.getRegionById({ variables: { _id: _id}});
-        await props.getLineage({ variables: {_id: _id }});
+    useEffect(() => {
+        props.getRegionById({ variables: { _id: _id}});
+        props.getLineage({ variables: {_id: _id }});
     }, [props.subregions, _id, location.pathname]);
 
     const [landmarkName, setLandmarkName] = useState('');
@@ -24,6 +24,7 @@ const RegionViewer = (props) => {
         events.forEach(e => e.target.value='');
         setEvents([]);
         await props.addLandmark(props.activeRegion._id, landmarkName, props.activeRegion.name);
+        console.log('refetched');
         await props.regionRefetch();
     };
 

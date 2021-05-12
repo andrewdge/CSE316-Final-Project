@@ -50,7 +50,13 @@ const RegionEntry = (props) => {
     let landmarks;
     if (props.entry.landmarks.length == 0) landmarks = 'No Landmarks';
     if (props.entry.landmarks.length == 1) landmarks = props.entry.landmarks.map(entry => entry.name);
-    else landmarks = props.entry.landmarks.map((entry, index) => index !== props.entry.landmarks.length-1 ? entry.name + ", " : entry.name);
+    else landmarks = 
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', overflow: "hidden"}}>
+            {
+            props.entry.landmarks.map((entry, index) => 
+            index !== props.entry.landmarks.length-1 ? entry.name + ", " : entry.name)
+            }
+        </div>
 
     return (
         <WCard style={{ height: '60px', width: '100%', borderStyle: 'solid' }}>

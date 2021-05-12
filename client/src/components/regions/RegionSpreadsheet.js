@@ -17,9 +17,9 @@ const RegionSpreadsheet = (props) => {
     const [isCapitalAscending, capitalToggleAscending] = useState(false);
     const [isLeaderAscending, leaderToggleAscending] = useState(false);
     
-    useEffect(async () => {
-        await props.getRegionById({ variables: { _id: _id }});
-        await props.getLineage({ variables: {_id: _id }});
+    useEffect(() => {
+        props.getRegionById({ variables: { _id: _id }});
+        props.getLineage({ variables: {_id: _id }});
     }, [props.subregions, _id, location.pathname]);
     
     const addNewRegion = async () => {
@@ -45,7 +45,6 @@ const RegionSpreadsheet = (props) => {
         await props.regionRefetch();
     }
 
-    console.log(props.activeRegion);
 
     return (
         <>

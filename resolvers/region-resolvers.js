@@ -33,10 +33,9 @@ module.exports = {
                 let parentRegion = await (await Region.findOne({_id: region.parentRegion })).toJSON();
                 region.parentRegion = parentRegion;
             }
-            let landmarks = region.landmarks;
-            for (i = 0; i < landmarks.length; i++) {
-                landmarks[i] = await Landmark.findOne({_id: landmarks[i] });
-            }
+            let landmarks = await Promise.all(region.landmarks.map( async (landmark) => {
+                return await Landmark.findOne({_id: landmark });
+            }));
             region.landmarks = landmarks;
             if (region) return region;
             else return {};
