@@ -25,8 +25,6 @@ export class UpdateRegion_Transaction extends jsTPS_Transaction {
     // Since delete/add are opposites, flip matching opcode
     async undoTransaction() {
 		let data;
-        const { _id } = this.region.parentRegion;
-        this.region.parentRegion = _id;
         this.opcode === 1 ? { data } = await this.deleteFunction({ variables: { _id: this.region._id }})
                           : { data } = await this.addFunction({ variables: { region: this.region, regionExists: true }});
         if(this.opcode !== 0) {

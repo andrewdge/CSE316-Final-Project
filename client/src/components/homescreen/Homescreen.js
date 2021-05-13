@@ -73,6 +73,7 @@ const Homescreen = (props) => {
 		if (data) {
 			activeRegion = data.getRegionById;
             subregions = activeRegion.subregions;
+            console.log(data);
 		}
 	}
 
@@ -170,6 +171,7 @@ const Homescreen = (props) => {
 		let cleanedSubregions = subregions.map(({ __typename, ...rest}) => rest);
         for (let i = 0; i < cleanedSubregions.length; i++){
             cleanedSubregions[i].parentRegion = cleanedSubregions[i].parentRegion._id;
+            cleanedSubregions[i].landmarks = cleanedSubregions[i].landmarks.map(landmark => landmark._id);
         }
 		let transaction = new SortRegionsByCriteria_Transaction(_id, isAscending, criteria, cleanedSubregions, SortRegionsByCriteria);
 		props.tps.addTransaction(transaction);
@@ -190,6 +192,7 @@ const Homescreen = (props) => {
             sortId: entry.sortId,
             owner: entry.owner
         }
+        console.log(deletedRegion);
         let opcode = 0;
 		let transaction = new UpdateRegion_Transaction(deletedRegion, opcode, AddRegion, TempDeleteRegion);
 		props.tps.addTransaction(transaction);
@@ -268,7 +271,7 @@ const Homescreen = (props) => {
                         <RegionSpreadsheet 
                             fetchUser={props.fetchUser} user={props.user} auth={auth} addNewRegion={addNewRegion} 
                             deleteSubregion={deleteSubregion} editRegion={editRegion} canUndo={canUndo} canRedo={canRedo}
-                            undo={tpsUndo} redo={tpsRedo} activeRegion={activeRegion} subregions={subregions} 
+                            undo={tpsUndo} redo={tpsRedo} activeRegion={activeRegion} subregions={subregions} tpsUndo={tpsUndo} tpsRedo={tpsRedo}
                             getRegionById={getRegionById} refetchRegions={refetchRegions} clearTPS={clearTPS}
                             editRegion={editRegion} sortRegions={sortRegionsByCriteria} getLineage={getLineage} lineage={lineage}
                         />
@@ -277,7 +280,7 @@ const Homescreen = (props) => {
                         <RegionSpreadsheet
                             fetchUser={props.fetchUser} user={props.user} auth={auth} addNewRegion={addNewRegion}
                             deleteSubregion={deleteSubregion} editRegion={editRegion} canUndo={canUndo} canRedo={canRedo}
-                            undo={tpsUndo} redo={tpsRedo} activeRegion={activeRegion} subregions={subregions}
+                            undo={tpsUndo} redo={tpsRedo} activeRegion={activeRegion} subregions={subregions} tpsUndo={tpsUndo} tpsRedo={tpsRedo}
                             getRegionById={getRegionById} refetchRegions={refetchRegions} clearTPS={clearTPS}
                             editRegion={editRegion} sortRegions={sortRegionsByCriteria} getLineage={getLineage} lineage={lineage}
                         />
@@ -287,7 +290,7 @@ const Homescreen = (props) => {
                             fetchUser={props.fetchUser} user={props.user} auth={auth} activeRegion={activeRegion} subregions={subregions}
                             getRegionById={getRegionById} regionRefetch={regionRefetch} getLineage={getLineage} lineage={lineage} 
                             clearTPS={clearTPS} regionRefetch={regionRefetch} canUndo={canUndo} canRedo={canRedo} undo={tpsUndo} redo={tpsRedo}
-                            addLandmark={addLandmark} deleteLandmark={deleteLandmark} editLandmark={editLandmark}
+                            addLandmark={addLandmark} deleteLandmark={deleteLandmark} editLandmark={editLandmark} tpsUndo={tpsUndo} tpsRedo={tpsRedo}
                         />
                     </Route>
                     <Redirect from="/" to={ {pathname: "/home"} } />

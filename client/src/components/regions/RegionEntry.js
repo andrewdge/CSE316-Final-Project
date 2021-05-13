@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { WCard, WRow, WCol, WButton, WInput } from 'wt-frontend';
 import { Link, useHistory } from 'react-router-dom';
+import Delete from '../modals/Delete';
 
 const RegionEntry = (props) => {
     
@@ -10,6 +11,7 @@ const RegionEntry = (props) => {
     const [editingName, toggleNameEdit] = useState(false);
     const [editingCapital, toggleCapitalEdit] = useState(false);
     const [editingLeader, toggleLeaderEdit] = useState(false);
+    const [showDelete, setShowDelete]         = useState(false);
 
     const handleNameEdit = (e) => {
         toggleNameEdit(false);
@@ -40,6 +42,10 @@ const RegionEntry = (props) => {
         await props.refetchRegions();
     }
 
+    const handleShowDelete = () => {
+        setShowDelete(!showDelete);
+    }
+
     const goToSubregion = async () => {
         props.clearTPS();
         await props.refetchRegions();
@@ -59,73 +65,76 @@ const RegionEntry = (props) => {
             
 
     return (
-        <WCard style={{ height: '60px', width: '100%', borderStyle: 'solid' }}>
-            <WRow style={{ height: '100%', width: '100%'}}>
-                <WCol size='1' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                    <WButton shape='rounded' hoverAnimation='lighten' clickAnimation='ripple-light' onClick={deleteSubregion}>
-                        <i className='material-icons'>clear</i>
-                    </WButton>
-                    <Link to={{ pathname: `/regions/${props.entry._id}` }}>
-                        <WButton wType='ghost' style={{ color: 'deepskyblue' }} onClick={goToSubregion} hoverAnimation='darken' >   
-                            <i className='material-icons'>subdirectory_arrow_right</i>
+        <>
+            <WCard style={{ height: '60px', width: '100%', borderStyle: 'solid' }}>
+                <WRow style={{ height: '100%', width: '100%'}}>
+                    <WCol size='1' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                        <WButton shape='rounded' hoverAnimation='lighten' clickAnimation='ripple-light' onClick={handleShowDelete}>
+                            <i className='material-icons'>clear</i>
                         </WButton>
-                    </Link>
-                </WCol>
-                <WCol size='2' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                    {
-                        editingName
-                            ? <WInput
-                                className='table-input' onBlur={handleNameEdit}
-                                autoFocus={true} defaultValue={name} type='text'
-                                wType="outlined" inputClass="table-input-class"
-                            />
-                            : <div className="table-text"
-                                onClick={() => toggleNameEdit(!editingName)}
-                            >{name}
+                        <Link to={{ pathname: `/regions/${props.entry._id}` }}>
+                            <WButton wType='ghost' style={{ color: 'deepskyblue' }} onClick={goToSubregion} hoverAnimation='darken' >   
+                                <i className='material-icons'>subdirectory_arrow_right</i>
+                            </WButton>
+                        </Link>
+                    </WCol>
+                    <WCol size='2' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                        {
+                            editingName
+                                ? <WInput
+                                    className='table-input' onBlur={handleNameEdit}
+                                    autoFocus={true} defaultValue={name} type='text'
+                                    wType="outlined" inputClass="table-input-class"
+                                />
+                                : <div className="table-text"
+                                    onClick={() => toggleNameEdit(!editingName)}
+                                >{name}
+                                </div>
+                        }
+                    </WCol>
+                    <WCol size='2' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                        {
+                            editingCapital
+                                ? <WInput
+                                    className='table-input' onBlur={handleCapitalEdit}
+                                    autoFocus={true} defaultValue={capital} type='text'
+                                    wType="outlined" inputClass="table-input-class"
+                                />
+                                : <div className="table-text"
+                                    onClick={() => toggleCapitalEdit(!editingCapital)}
+                                >{capital}
+                                </div>
+                        }
+                    </WCol>
+                    <WCol size='2' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                        {
+                            editingLeader
+                                ? <WInput
+                                    className='table-input' onBlur={handleLeaderEdit}
+                                    autoFocus={true} defaultValue={leader} type='text'
+                                    wType="outlined" inputClass="table-input-class"
+                                />
+                                : <div className="table-text"
+                                    onClick={() => toggleLeaderEdit(!editingLeader)}
+                                >{leader}
+                                </div>
+                        }
+                    </WCol>
+                    <WCol size='2' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                        flag here
+                    </WCol>
+                    <WCol size='3' style={{ display: 'flex'}}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '400px' }}>
+                            <div style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}>
+                                {landmarks}
                             </div>
-                    }
-                </WCol>
-                <WCol size='2' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                    {
-                        editingCapital
-                            ? <WInput
-                                className='table-input' onBlur={handleCapitalEdit}
-                                autoFocus={true} defaultValue={capital} type='text'
-                                wType="outlined" inputClass="table-input-class"
-                            />
-                            : <div className="table-text"
-                                onClick={() => toggleCapitalEdit(!editingCapital)}
-                            >{capital}
-                            </div>
-                    }
-                </WCol>
-                <WCol size='2' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                    {
-                        editingLeader
-                            ? <WInput
-                                className='table-input' onBlur={handleLeaderEdit}
-                                autoFocus={true} defaultValue={leader} type='text'
-                                wType="outlined" inputClass="table-input-class"
-                            />
-                            : <div className="table-text"
-                                onClick={() => toggleLeaderEdit(!editingLeader)}
-                            >{leader}
-                            </div>
-                    }
-                </WCol>
-                <WCol size='2' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                    flag here
-                </WCol>
-                <WCol size='3' style={{ display: 'flex'}}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '400px' }}>
-                        <div style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}>
-                            {landmarks}
                         </div>
-                    </div>
-                    
-                </WCol>
-            </WRow>
-        </WCard>
+                        
+                    </WCol>
+                </WRow>
+            </WCard>
+            {showDelete && <Delete deleteFunction={deleteSubregion} deleteName={props.entry.name} setShowDelete={setShowDelete} cancelFunction={handleShowDelete} />}
+        </>
     );
 };
 export default RegionEntry;

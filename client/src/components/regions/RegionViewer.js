@@ -11,11 +11,42 @@ const RegionViewer = (props) => {
     let { _id } = useParams();
     let history = useHistory();
     let location = useLocation();
+    const [ctrl, setCtrl]              = useState(false);
+	const [y, setY]                    = useState(false);
+	const [z, setZ]                    = useState(false);
 
     useEffect(() => {
         props.getRegionById({ variables: { _id: _id}});
         props.getLineage({ variables: {_id: _id }});
     }, [props.subregions, _id, location.pathname]);
+
+    useEffect(() => {
+        document.onkeydown = (e) => {
+			if (e.key === 'Control') {
+			  setCtrl(true);
+			} 
+			if (e.key === 'y') {
+			  if (ctrl && props.canRedo) props.tpsRedo();
+			  setY(true);
+			} 
+			if (e.key === 'z') {
+			  if (ctrl && props.canUndo) props.tpsUndo();
+			  setZ(true);
+			} 
+		  }
+		  document.onkeyup = (e) => {
+			if (e.key === 'Control') {
+			  setCtrl(false);
+			} 
+			if (e.key === 'y') {
+			  setY(false);
+			} 
+			if (e.key === 'z') {
+			  setZ(false);
+			} 
+		  }
+		return () => {}
+    });
 
     const [landmarkName, setLandmarkName] = useState('');
     const [events, setEvents] = useState([]);
@@ -59,7 +90,13 @@ const RegionViewer = (props) => {
                                 <WCol size='2'>
 
                                 </WCol>
-                                <WCol size='6' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'white', fontSize: '20px'}}>
+                                <WCol size='2'>
+
+                                </WCol>
+                                <WCol size='2' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'white', fontSize: '20px'}}>
+
+                                </WCol>
+                                <WCol size='2'>
 
                                 </WCol>
                                 <WCol size='3'>

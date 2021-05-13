@@ -13,6 +13,10 @@ const RegionSpreadsheet = (props) => {
     let history = useHistory();
     let location = useLocation();
 
+    const [ctrl, setCtrl]              = useState(false);
+	const [y, setY]                    = useState(false);
+	const [z, setZ]                    = useState(false);
+
     const [isNameAscending, nameToggleAscending] = useState(false);
     const [isCapitalAscending, capitalToggleAscending] = useState(false);
     const [isLeaderAscending, leaderToggleAscending] = useState(false);
@@ -25,10 +29,39 @@ const RegionSpreadsheet = (props) => {
     useEffect(() => {
         getData();
     }, [props.subregions, _id, location.pathname]);
+
+    useEffect(() => {
+        document.onkeydown = (e) => {
+			if (e.key === 'Control') {
+			  setCtrl(true);
+			} 
+			if (e.key === 'y') {
+			  if (ctrl && props.canRedo) props.tpsRedo();
+			  setY(true);
+			} 
+			if (e.key === 'z') {
+			  if (ctrl && props.canUndo) props.tpsUndo();
+			  setZ(true);
+			} 
+		  }
+		  document.onkeyup = (e) => {
+			if (e.key === 'Control') {
+			  setCtrl(false);
+			} 
+			if (e.key === 'y') {
+			  setY(false);
+			} 
+			if (e.key === 'z') {
+			  setZ(false);
+			} 
+		  }
+		return () => {}
+    });
+
     
     const addNewRegion = async () => {
-        await props.addNewRegion(_id);
-        await props.refetchRegions();
+        await props.addNewRegion(props.activeRegion._id);
+        await getData();
     }
 
     const nameReorder = async () => {
