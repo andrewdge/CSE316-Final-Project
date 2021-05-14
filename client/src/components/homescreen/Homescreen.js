@@ -22,8 +22,9 @@ const Homescreen = (props) => {
     let regions = [];
     let activeRegion = null;
     let subregions = null;
+    let siblings = null;
+    let siblingIndex = -1;
     let lineage = [];
-    let regionsToDelete = [];
     const [canUndo, setUndo]                  = useState(false);
     const [canRedo, setRedo]                  = useState(false);
     const [AddRegion]                         = useMutation(mutations.ADD_REGION);
@@ -56,7 +57,9 @@ const Homescreen = (props) => {
     if (regionData) {
         activeRegion = regionData.getRegionById;
         subregions = activeRegion.subregions;
+        if (activeRegion.parentRegion) siblings = activeRegion.parentRegion.subregions;
     }
+
 
     const [getLineage, {loading: lineageLoading, error: lineageError, data: lineageData, refetch: lineageRefetch}] = useLazyQuery(GET_LINEAGE);
     if (lineageError) {
@@ -73,7 +76,7 @@ const Homescreen = (props) => {
 		if (data) {
 			activeRegion = data.getRegionById;
             subregions = activeRegion.subregions;
-            console.log(data);
+            if (activeRegion.parentRegion) siblings = activeRegion.parentRegion.subregions;
 		}
 	}
 
@@ -167,7 +170,6 @@ const Homescreen = (props) => {
 
     const sortRegionsByCriteria = async(_id, isAscending, criteria, subregions) => {
 		//remove typename cuz it sucks
-        console.log(subregions);
 		let cleanedSubregions = subregions.map(({ __typename, ...rest}) => rest);
         for (let i = 0; i < cleanedSubregions.length; i++){
             cleanedSubregions[i].parentRegion = cleanedSubregions[i].parentRegion._id;
@@ -179,25 +181,26 @@ const Homescreen = (props) => {
 	}
 
     const deleteSubregion = async (entry) => {
-        //regionsToDelete.push(entry);
+        let cleanedSubregions = entry.subregions.map(entry => entry._id);
+        let cleanedParentRegion = entry.parentRegion._id;
+        let cleanedLandmarks = entry.landmarks.map(entry => entry._id);
+
         const deletedRegion = {
             _id: entry._id,
             name: entry.name,
             capital: entry.capital,
             leader: entry.leader,
             flag: entry.flag,
-            parentRegion: entry.parentRegion,
-            subregions: entry.subregions,
-            landmarks: entry.landmarks,
+            parentRegion: cleanedParentRegion,
+            subregions: cleanedSubregions,
+            landmarks: cleanedLandmarks,
             sortId: entry.sortId,
             owner: entry.owner
         }
-        console.log(deletedRegion);
         let opcode = 0;
 		let transaction = new UpdateRegion_Transaction(deletedRegion, opcode, AddRegion, TempDeleteRegion);
 		props.tps.addTransaction(transaction);
 		tpsRedo();
-        //console.log(regionsToDelete);
     }
 
     const addLandmark = async (parentID, name, location) => {
@@ -239,15 +242,13 @@ const Homescreen = (props) => {
         props.tps.clearAllTransactions();
         pollUndo();
         pollRedo();
-        // console.log('deleting');
-        // console.log(regionsToDelete);
-        regionsToDelete.forEach( async(region) => {
-            await AddRegion({ variables: { region: region, regionExists: true }});
+        Object.keys(localStorage).forEach( async(region) => {
+            await AddRegion({ variables: { region: JSON.parse(localStorage.getItem(region)), regionExists: true }});
         });
-        regionsToDelete.forEach( async(region) => {
-            DeleteRegion({ variables: { _id: region._id}, refetchQueries: [{ query: GET_DB_REGIONS}] });
+        Object.keys(localStorage).forEach( async(region) => {
+            DeleteRegion({ variables: { _id: region }});
         });
-        regionsToDelete = [];
+        localStorage.clear();
         await refetchRegions();
     }
 
@@ -291,6 +292,7 @@ const Homescreen = (props) => {
                             getRegionById={getRegionById} regionRefetch={regionRefetch} getLineage={getLineage} lineage={lineage} 
                             clearTPS={clearTPS} regionRefetch={regionRefetch} canUndo={canUndo} canRedo={canRedo} undo={tpsUndo} redo={tpsRedo}
                             addLandmark={addLandmark} deleteLandmark={deleteLandmark} editLandmark={editLandmark} tpsUndo={tpsUndo} tpsRedo={tpsRedo}
+                            siblings={siblings}
                         />
                     </Route>
                     <Redirect from="/" to={ {pathname: "/home"} } />

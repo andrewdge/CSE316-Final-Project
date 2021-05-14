@@ -136,6 +136,8 @@ module.exports = {
 
             let recursiveDel = async (objectId) => {
                 const region = await Region.findOne({ _id: objectId});
+                const landmarks = region.landmarks;
+                landmarks.forEach( async(landmark) => {await Landmark.deleteOne({_id: landmark })});
                 const subregions = region.subregions;
                 if (!subregions){
                     const del = await Region.deleteOne({_id: objectId});

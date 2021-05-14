@@ -20,6 +20,11 @@ export class UpdateRegion_Transaction extends jsTPS_Transaction {
         if(this.opcode !== 0) {
             this.region._id = data.addRegion;
         }
+        if (this.opcode === 0){
+            if (!localStorage.getItem(this.region._id)){
+                localStorage.setItem(this.region._id, JSON.stringify(this.region));
+            }
+        }
 		return data;
     }
     // Since delete/add are opposites, flip matching opcode
@@ -29,6 +34,9 @@ export class UpdateRegion_Transaction extends jsTPS_Transaction {
                           : { data } = await this.addFunction({ variables: { region: this.region, regionExists: true }});
         if(this.opcode !== 0) {
             this.region._id = data.addRegion;
+        }
+        if (this.opcode === 0){
+            localStorage.removeItem(this.region._id);
         }
 		return data;
     }

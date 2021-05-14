@@ -8,16 +8,19 @@ import LandmarkEntry from '../landmarks/LandmarkEntry';
 
 const RegionViewer = (props) => {
 
+    
+
     let { _id } = useParams();
     let history = useHistory();
     let location = useLocation();
-    const [ctrl, setCtrl]              = useState(false);
-	const [y, setY]                    = useState(false);
-	const [z, setZ]                    = useState(false);
+
+    const getData = async () => {
+        await props.getRegionById({ variables: { _id: _id }});
+        await props.getLineage({ variables: {_id: _id }});
+    }
 
     useEffect(() => {
-        props.getRegionById({ variables: { _id: _id}});
-        props.getLineage({ variables: {_id: _id }});
+        getData();
     }, [props.subregions, _id, location.pathname]);
 
     useEffect(() => {
@@ -48,6 +51,12 @@ const RegionViewer = (props) => {
 		return () => {}
     });
 
+    const [ctrl, setCtrl]              = useState(false);
+	const [y, setY]                    = useState(false);
+	const [z, setZ]                    = useState(false);
+
+    
+
     const [landmarkName, setLandmarkName] = useState('');
     const [events, setEvents] = useState([]);
 
@@ -55,8 +64,7 @@ const RegionViewer = (props) => {
         events.forEach(e => e.target.value='');
         setEvents([]);
         await props.addLandmark(props.activeRegion._id, landmarkName, props.activeRegion.name);
-        console.log('refetched');
-        await props.regionRefetch();
+        getData();
     };
 
     const updateNameInput = (e) => {
@@ -64,6 +72,67 @@ const RegionViewer = (props) => {
 		setLandmarkName(value);
         setEvents(events => [...events, e]);
 	};
+
+    
+    let leftSibling;
+    let rightSibling;
+    
+    if (props.siblings){
+        let siblings = props.siblings;
+        let currSiblingIndex = props.siblings.indexOf(_id);
+        let leftDisabled = props.activeRegion.parentRegion === null || currSiblingIndex === 0;
+        let rightDisabled = props.activeRegion.parentRegion === null || currSiblingIndex === siblings.length-1;
+        if (currSiblingIndex === 0){
+            leftSibling = 
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'enter' }}>
+                <WButton className='table-entry-buttons' wType="texted" shape="rounded" disabled={leftDisabled} >
+                    <i className="material-icons">west</i>
+                </WButton>
+            </div>;
+            rightSibling = 
+            <>
+                <Link style={{ display: 'flex', justifyContent: 'center', alignItems: 'enter' }} to={{ pathname: `/regionviewer/${siblings[currSiblingIndex+1]}` }} onClick={props.clearTPS} >
+                    <WButton className='table-entry-buttons' wType="texted" shape="rounded" disabled={rightDisabled}>
+                        <i className="material-icons">east</i>
+                    </WButton>
+                </Link>
+            </>;
+        } else if (currSiblingIndex === siblings.length-1){
+            leftSibling = 
+            <>
+                <Link style={{ display: 'flex', justifyContent: 'center', alignItems: 'enter' }} to={{ pathname: `/regionviewer/${siblings[currSiblingIndex-1]}` }} onClick={props.clearTPS} >
+                    <WButton className='table-entry-buttons' wType="texted" shape="rounded" disabled={leftDisabled} >
+                        <i className="material-icons">west</i>
+                    </WButton>
+                </Link>
+            </>;
+            rightSibling = 
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'enter' }}>
+                <WButton className='table-entry-buttons' wType="texted" shape="rounded" disabled={rightDisabled}>
+                    <i className="material-icons">east</i>
+                </WButton>
+            </div>;
+        } else {
+            leftSibling = 
+            <>
+                <Link style={{ display: 'flex', justifyContent: 'center', alignItems: 'enter' }} to={{ pathname: `/regionviewer/${siblings[currSiblingIndex-1]}` }} onClick={props.clearTPS} >
+                    <WButton className='table-entry-buttons' wType="texted" shape="rounded" disabled={leftDisabled} >
+                        <i className="material-icons">west</i>
+                    </WButton>
+                </Link>
+            </>;
+            rightSibling = 
+            <>
+                <Link style={{ display: 'flex', justifyContent: 'center', alignItems: 'enter' }} to={{ pathname: `/regionviewer/${siblings[currSiblingIndex+1]}` }} onClick={props.clearTPS} >
+                    <WButton className='table-entry-buttons' wType="texted" shape="rounded" disabled={rightDisabled}>
+                        <i className="material-icons">east</i>
+                    </WButton>
+                </Link>
+            </>;
+        }
+    }
+
+    
 
     return (
         <>
@@ -94,7 +163,7 @@ const RegionViewer = (props) => {
 
                                 </WCol>
                                 <WCol size='2' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'white', fontSize: '20px'}}>
-
+                                    {leftSibling}{rightSibling}
                                 </WCol>
                                 <WCol size='2'>
 

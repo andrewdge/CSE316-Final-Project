@@ -39,7 +39,7 @@ const RegionEntry = (props) => {
 
     const deleteSubregion = async () =>{
         await props.deleteSubregion(props.entry);
-        await props.refetchRegions();
+        await props.getData();
     }
 
     const handleShowDelete = () => {

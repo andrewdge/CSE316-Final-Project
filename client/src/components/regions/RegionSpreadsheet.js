@@ -13,14 +13,6 @@ const RegionSpreadsheet = (props) => {
     let history = useHistory();
     let location = useLocation();
 
-    const [ctrl, setCtrl]              = useState(false);
-	const [y, setY]                    = useState(false);
-	const [z, setZ]                    = useState(false);
-
-    const [isNameAscending, nameToggleAscending] = useState(false);
-    const [isCapitalAscending, capitalToggleAscending] = useState(false);
-    const [isLeaderAscending, leaderToggleAscending] = useState(false);
-
     const getData = async () => {
         await props.getRegionById({ variables: { _id: _id }});
         await props.getLineage({ variables: {_id: _id }});
@@ -58,6 +50,16 @@ const RegionSpreadsheet = (props) => {
 		return () => {}
     });
 
+    const [ctrl, setCtrl]              = useState(false);
+	const [y, setY]                    = useState(false);
+	const [z, setZ]                    = useState(false);
+
+    const [isNameAscending, nameToggleAscending] = useState(false);
+    const [isCapitalAscending, capitalToggleAscending] = useState(false);
+    const [isLeaderAscending, leaderToggleAscending] = useState(false);
+
+    
+
     
     const addNewRegion = async () => {
         await props.addNewRegion(props.activeRegion._id);
@@ -67,19 +69,19 @@ const RegionSpreadsheet = (props) => {
     const nameReorder = async () => {
         props.sortRegions(props.activeRegion._id, isNameAscending, "name", props.activeRegion.subregions);
         nameToggleAscending(!isNameAscending);
-        await props.refetchRegions();
+        await getData();
     }
 
     const capitalReorder = async () => {
         props.sortRegions(props.activeRegion._id, isCapitalAscending, "capital", props.activeRegion.subregions);
         capitalToggleAscending(!isCapitalAscending);
-        await props.refetchRegions();
+        await getData();
     }
 
     const leaderReorder = async () => {
         props.sortRegions(props.activeRegion._id, isLeaderAscending, "leader", props.activeRegion.subregions);
         leaderToggleAscending(!isLeaderAscending);
-        await props.refetchRegions();
+        await getData();
     }
 
     return (
@@ -160,6 +162,7 @@ const RegionSpreadsheet = (props) => {
                                             <RegionEntry 
                                                 key={entry._id} entry={entry} index={index} deleteSubregion={props.deleteSubregion} 
                                                 refetchRegions={props.refetchRegions} editRegion={props.editRegion} clearTPS={props.clearTPS}
+                                                getData={getData}
                                             />
                                         ))
                                     }

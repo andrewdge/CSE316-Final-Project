@@ -70,6 +70,7 @@ export const GET_REGION_BY_ID = gql`
 				_id
 				name
 				parentRegion
+				subregions
 				owner
 			}
 			subregions {
