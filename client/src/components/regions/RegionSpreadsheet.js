@@ -85,7 +85,6 @@ const RegionSpreadsheet = (props) => {
         leaderToggleAscending(!isLeaderAscending);
         await props.refetchRegions();
     }
-    
 
     return (
         <>

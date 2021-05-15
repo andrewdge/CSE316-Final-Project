@@ -180,7 +180,7 @@ const Homescreen = (props) => {
             owner: props.user._id
         }
         let opcode = 1;
-		let transaction = new UpdateRegion_Transaction(newRegion, opcode, AddRegion, DeleteRegion);
+		let transaction = new UpdateRegion_Transaction(newRegion, opcode, AddRegion, DeleteRegion, false);
 		props.tps.addTransaction(transaction);
 		tpsRedo();
     }
@@ -270,13 +270,9 @@ const Homescreen = (props) => {
             console.log(JSON.parse(localStorage.getItem(region)));
         });
         Object.keys(localStorage).forEach( async(region) => {
-            await AddRegion({ variables: { region: JSON.parse(localStorage.getItem(region)), regionExists: true }});
-        });
-        Object.keys(localStorage).forEach( async(region) => {
             DeleteRegion({ variables: { _id: region }});
         });
         localStorage.clear();
-        await refetchRegions();
     }
 
 

@@ -150,7 +150,7 @@ module.exports = {
                 subregions = subregions.filter(region => region._id.toString() !== _id);
                 await Region.updateOne({_id: region.parentRegion }, { subregions: subregions});
             }
-            let deleted = await Region.deleteOne({ _id: objectId});
+            let deleted = await Region.findOne({ _id: objectId});
             if (deleted) return region;
             else return null;
             

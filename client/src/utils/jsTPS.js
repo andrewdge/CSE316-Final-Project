@@ -6,25 +6,30 @@ export class jsTPS_Transaction {
 /*  Handles list name changes, or any other top level details of a todolist that may be added   */
 export class UpdateRegion_Transaction extends jsTPS_Transaction {
     // opcodes: 0 - delete, 1 - add 
-    constructor(region, opcode, addfunc, delfunc) {
+    constructor(region, opcode, addfunc, delfunc, regionExists) {
         super();
 		this.region = region;
         this.addFunction = addfunc;
         this.deleteFunction = delfunc;
         this.opcode = opcode;
+        this.regionExists = regionExists;
     }
     async doTransaction() {
 		let data;
+        if (this.regionExists) {
+            this.region._id = this._id;
+        }
         this.opcode === 0 ? { data } = await this.deleteFunction({ variables: { _id: this.region._id }})
-						  : { data } = await this.addFunction({ variables: { region: this.region, regionExists: false }});
+						  : { data } = await this.addFunction({ variables: { region: this.region, regionExists: this.regionExists }});
         if(this.opcode !== 0) {
-            this.region._id = data.addRegion;
+            this.region._id = this._id = data.addRegion;
         }
         if (this.opcode === 0){
             if (!localStorage.getItem(this.region._id)){
                 localStorage.setItem(this.region._id, JSON.stringify(this.region));
             }
         }
+        this.regionExists = true;
 		return data;
     }
     // Since delete/add are opposites, flip matching opcode
