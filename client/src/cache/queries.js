@@ -58,6 +58,15 @@ export const GET_LINEAGE = gql`
 	}
 `;
 
+export const GET_ALL_SUBREGIONS = gql`
+	query GetAllSubregions($_id: String!, $currId: String!){
+		getAllSubregions(_id: $_id, currId: $currId) {
+			_id
+			name
+		}
+	}
+`;
+
 export const GET_REGION_BY_ID = gql`
 	query GetRegionById($_id: String!) {
 		getRegionById(_id: $_id) {

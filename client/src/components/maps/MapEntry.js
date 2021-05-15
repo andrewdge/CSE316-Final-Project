@@ -25,8 +25,9 @@ const Map = (props) => {
         await props.updateMapName(props.entry._id, mapName);
     }
 
-    const handleDeleteMap = () => {
-        props.deleteMap(props.entry._id);
+    const handleDeleteMap = async () => {
+        await props.deleteMap(props.entry._id);
+        await props.refetch();
     }
 
     const handleShowDelete = () => {

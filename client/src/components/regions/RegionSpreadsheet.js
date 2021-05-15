@@ -12,6 +12,7 @@ const RegionSpreadsheet = (props) => {
     let { _id } = useParams();
     let history = useHistory();
     let location = useLocation();
+    let isMap = location.pathname.includes('maps');
 
     const getData = async () => {
         await props.getRegionById({ variables: { _id: _id }});
@@ -21,6 +22,7 @@ const RegionSpreadsheet = (props) => {
     useEffect(() => {
         getData();
     }, [props.subregions, _id, location.pathname]);
+
 
     useEffect(() => {
         document.onkeydown = (e) => {
@@ -63,26 +65,27 @@ const RegionSpreadsheet = (props) => {
     
     const addNewRegion = async () => {
         await props.addNewRegion(props.activeRegion._id);
-        await getData();
+        await props.refetchRegions();
     }
 
     const nameReorder = async () => {
         props.sortRegions(props.activeRegion._id, isNameAscending, "name", props.activeRegion.subregions);
         nameToggleAscending(!isNameAscending);
-        await getData();
+        await props.refetchRegions();
     }
 
     const capitalReorder = async () => {
         props.sortRegions(props.activeRegion._id, isCapitalAscending, "capital", props.activeRegion.subregions);
         capitalToggleAscending(!isCapitalAscending);
-        await getData();
+        await props.refetchRegions();
     }
 
     const leaderReorder = async () => {
         props.sortRegions(props.activeRegion._id, isLeaderAscending, "leader", props.activeRegion.subregions);
         leaderToggleAscending(!isLeaderAscending);
-        await getData();
+        await props.refetchRegions();
     }
+    
 
     return (
         <>
@@ -120,11 +123,19 @@ const RegionSpreadsheet = (props) => {
                                 </WCol>
                                 <WCol size='6' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'white', fontSize: '20px'}}>
                                     Region name: 
-                                    <Link to={{ pathname: `/regionviewer/${props.activeRegion._id}` }} onClick={props.clearTPS}>
-                                        <WButton wType='texted' color='success' hoverAnimation='darken' clickAnimation='ripple-light' >
-                                            {props.activeRegion.name}
-                                        </WButton>
-                                    </Link>
+                                    {
+                                        isMap ? 
+                                            <WButton wType='texted' color='success' >
+                                                {props.activeRegion.name}
+                                            </WButton>
+                                        :
+                                        <Link to={{ pathname: `/regionviewer/${props.activeRegion._id}` }} onClick={props.clearTPS}>
+                                            <WButton wType='texted' color='success' hoverAnimation='darken' clickAnimation='ripple-light' >
+                                                {props.activeRegion.name}
+                                            </WButton>
+                                        </Link>
+                                    }
+                                    
                                 </WCol>
                                 <WCol size='3'>
 

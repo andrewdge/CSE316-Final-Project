@@ -16,7 +16,7 @@ export class UpdateRegion_Transaction extends jsTPS_Transaction {
     async doTransaction() {
 		let data;
         this.opcode === 0 ? { data } = await this.deleteFunction({ variables: { _id: this.region._id }})
-						  : { data } = await this.addFunction({ variables: { region: this.region, regionExists: false }});  
+						  : { data } = await this.addFunction({ variables: { region: this.region, regionExists: false }});
         if(this.opcode !== 0) {
             this.region._id = data.addRegion;
         }

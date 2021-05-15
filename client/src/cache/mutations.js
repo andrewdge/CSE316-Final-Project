@@ -69,6 +69,7 @@ export const SORT_REGIONS_BY_CRITERIA = gql`
 	}
 `;
 
+
 export const DELETE_REGION = gql`
 	mutation DeleteRegion($_id: String!) {
 		deleteRegion(_id: $_id)

@@ -72,6 +72,18 @@ html, body {
     font-size: 24px;
 }
 
+.change-parent-modal-header {
+    color: black;
+    background-color: var(--light-green);
+    font-size: 24px;
+}
+
+.change-parent-modal-button {
+    color: white;
+    font-weight: bold;
+    font-size: 20px;
+}
+
 .modal-error {
     color: $primary-color;
     font-size: 14px;

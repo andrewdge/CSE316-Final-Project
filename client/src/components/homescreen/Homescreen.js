@@ -5,11 +5,11 @@ import CreateAccount from '../modals/CreateAccount';
 import MapContents from '../maps/MapContents';
 import RegionSpreadsheet from '../regions/RegionSpreadsheet';
 import RegionViewer from '../regions/RegionViewer';
-import { GET_DB_MAPS, GET_DB_REGIONS, GET_LINEAGE, GET_REGION_BY_ID } 				from '../../cache/queries';
+import { GET_DB_MAPS, GET_DB_REGIONS, GET_LINEAGE, GET_REGION_BY_ID, GET_ALL_SUBREGIONS } 				from '../../cache/queries';
 import * as mutations 					from '../../cache/mutations';
 import { useMutation, useQuery, useLazyQuery } 		from '@apollo/client';
 import Welcome from '../welcome/Welcome';
-import { Switch, Route, Redirect } from 'react-router-dom';
+import { Switch, Route, Redirect, useHistory } from 'react-router-dom';
 import { UpdateRegion_Transaction, EditRegion_Transaction, SortRegionsByCriteria_Transaction, 
          UpdateLandmark_Transaction,
        } from '../../utils/jsTPS';
@@ -23,8 +23,8 @@ const Homescreen = (props) => {
     let activeRegion = null;
     let subregions = null;
     let siblings = null;
-    let siblingIndex = -1;
     let lineage = [];
+    let changeableSubregions = [];
     const [canUndo, setUndo]                  = useState(false);
     const [canRedo, setRedo]                  = useState(false);
     const [AddRegion]                         = useMutation(mutations.ADD_REGION);
@@ -36,6 +36,9 @@ const Homescreen = (props) => {
     const [AddLandmark]                       = useMutation(mutations.ADD_LANDMARK);
     const [DeleteLandmark]                    = useMutation(mutations.DELETE_LANDMARK);
     const [UpdateLandmark]                    = useMutation(mutations.UPDATE_LANDMARK);
+    
+    
+    let history = useHistory();
 
     // const GetDBRegions = useQuery(GET_DB_REGIONS);
     // if(GetDBRegions.error) { console.log(GetDBRegions.error); }
@@ -43,11 +46,11 @@ const Homescreen = (props) => {
 	// 	regions = GetDBRegions.data.getAllRegions;
 	// }
 
-    const GetDBMaps = useQuery(GET_DB_MAPS);
+    const {loading: mapsLoading, error: mapsError, data: mapsData, refetch: mapsRefetch} = useQuery(GET_DB_MAPS, {fetchPolicy: 'network-only'});
 	// if(loading) { console.log('loading'); }
-	if(GetDBMaps.error) { console.log(GetDBMaps.error); }
-	if(GetDBMaps.data) { 
-		maps = GetDBMaps.data.getAllMaps;
+	if(mapsError) { console.log(mapsError); }
+	if(mapsData) { 
+		maps = mapsData.getAllMaps;
 	}
 
     const [getRegionById, {loading: regionLoading, error: regionError, data: regionData, refetch: regionRefetch}] = useLazyQuery(GET_REGION_BY_ID);
@@ -61,7 +64,7 @@ const Homescreen = (props) => {
     }
 
 
-    const [getLineage, {loading: lineageLoading, error: lineageError, data: lineageData, refetch: lineageRefetch}] = useLazyQuery(GET_LINEAGE);
+    const [getLineage, {loading: lineageLoading, error: lineageError, data: lineageData, refetch: lineageRefetch}] = useLazyQuery(GET_LINEAGE, {fetchPolicy: 'network-only'});
     if (lineageError) {
         console.log(lineageError);
     }
@@ -69,9 +72,25 @@ const Homescreen = (props) => {
         lineage = lineageData.getLineage;
     }
 
+    const [getAllSubregions, {loading: subregionLoading, error: subregionError, data: subregionData, refetch: subregionRefetch}] = useLazyQuery(GET_ALL_SUBREGIONS, {fetchPolicy: 'network-only'});
+    if (subregionError){
+        console.log(subregionError);
+    }
+    if (subregionData){
+        changeableSubregions = subregionData.getAllSubregions;
+    }
+
+    const refetchMaps = async () => {
+        const {loading, error, data} = await mapsRefetch();
+        if (error) console.log(error);
+        if (data) {
+            maps = data.getAllMaps;
+            console.log(maps);
+        }
+    }
+
     const refetchRegions= async () => {
         const {loading, error, data } = await regionRefetch();
-        //console.log(data);
         if (error) { console.log(error);}
 		if (data) {
 			activeRegion = data.getRegionById;
@@ -80,11 +99,14 @@ const Homescreen = (props) => {
 		}
 	}
 
+   
+
 	const auth = props.user === null ? false : true;
 
     const tpsUndo = async () => {
 		const retVal = await props.tps.undoTransaction();
-		refetchRegions(regionRefetch);
+        console.log(props.tps.transactions);
+		refetchRegions();
 		pollUndo();
 		pollRedo();
 		return retVal;
@@ -92,7 +114,7 @@ const Homescreen = (props) => {
 
 	const tpsRedo = async () => {
 		const retVal = await props.tps.doTransaction();
-		refetchRegions(regionRefetch);
+		refetchRegions();
 		pollUndo();
 		pollRedo();
 		return retVal;
@@ -133,8 +155,9 @@ const Homescreen = (props) => {
         const { data } = await UpdateRegion( { variables: { _id: _id, field: 'name', value: name }, refetchQueries: [{ query: GET_DB_MAPS }]});
     }
 
-    const deleteMap = (_id) => {
-        DeleteRegion({ variables: { _id: _id}, refetchQueries: [{ query: GET_DB_MAPS}] });
+    const deleteMap = async (_id) => {
+        await DeleteRegion({ variables: { _id: _id}});
+        await refetchMaps();
     }
 
     const bubbleMapToTop = async (entry) => {
@@ -174,6 +197,7 @@ const Homescreen = (props) => {
         for (let i = 0; i < cleanedSubregions.length; i++){
             cleanedSubregions[i].parentRegion = cleanedSubregions[i].parentRegion._id;
             cleanedSubregions[i].landmarks = cleanedSubregions[i].landmarks.map(landmark => landmark._id);
+            cleanedSubregions[i].subregions = cleanedSubregions[i].subregions.map(subregion => subregion._id);
         }
 		let transaction = new SortRegionsByCriteria_Transaction(_id, isAscending, criteria, cleanedSubregions, SortRegionsByCriteria);
 		props.tps.addTransaction(transaction);
@@ -237,11 +261,14 @@ const Homescreen = (props) => {
 		tpsRedo();
     }
 
-    //TODO: Regions to delete not working for hard deletion of nested regions
+
     const clearTPS = async () => {
         props.tps.clearAllTransactions();
         pollUndo();
         pollRedo();
+        Object.keys(localStorage).forEach( (region) => {
+            console.log(JSON.parse(localStorage.getItem(region)));
+        });
         Object.keys(localStorage).forEach( async(region) => {
             await AddRegion({ variables: { region: JSON.parse(localStorage.getItem(region)), regionExists: true }});
         });
@@ -260,7 +287,7 @@ const Homescreen = (props) => {
                 <Switch>
                     <Route exact path="/home" name="home">
                         <MapContents 
-                            user={props.user} fetchUser={props.fetchUser} maps={maps} refetch={GetDBMaps.refetch}
+                            user={props.user} fetchUser={props.fetchUser} maps={maps} refetch={refetchMaps}
                             createNewMap={createNewMap} deleteMap={deleteMap} updateMapName={updateMapName} 
                             bubbleMapToTop={bubbleMapToTop} auth={auth}
                         />
@@ -290,9 +317,10 @@ const Homescreen = (props) => {
                         <RegionViewer
                             fetchUser={props.fetchUser} user={props.user} auth={auth} activeRegion={activeRegion} subregions={subregions}
                             getRegionById={getRegionById} regionRefetch={regionRefetch} getLineage={getLineage} lineage={lineage} 
-                            clearTPS={clearTPS} regionRefetch={regionRefetch} canUndo={canUndo} canRedo={canRedo} undo={tpsUndo} redo={tpsRedo}
+                            clearTPS={clearTPS} refetchRegions={refetchRegions} canUndo={canUndo} canRedo={canRedo} undo={tpsUndo} redo={tpsRedo}
                             addLandmark={addLandmark} deleteLandmark={deleteLandmark} editLandmark={editLandmark} tpsUndo={tpsUndo} tpsRedo={tpsRedo}
-                            siblings={siblings}
+                            siblings={siblings} getAllSubregions={getAllSubregions} changeableSubregions={changeableSubregions}
+                            changeParent={editRegion}
                         />
                     </Route>
                     <Redirect from="/" to={ {pathname: "/home"} } />
@@ -303,7 +331,7 @@ const Homescreen = (props) => {
                         <Welcome user={props.user} fetchUser={props.fetchUser} auth={auth} />
                     </Route>
                     <Route exact path='/login' name='login'>
-                        <Login fetchUser={props.fetchUser} refetch={GetDBMaps.refetch} user={props.user} auth={auth}/>
+                        <Login fetchUser={props.fetchUser} refetch={refetchMaps} user={props.user} auth={auth}/>
                     </Route>
                     <Route exact path='/createaccount' name='createaccount'>
                         <CreateAccount fetchUser={props.fetchUser} user={props.user} auth={auth} />

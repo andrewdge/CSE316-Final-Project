@@ -48,7 +48,6 @@ const RegionEntry = (props) => {
 
     const goToSubregion = async () => {
         props.clearTPS();
-        await props.refetchRegions();
     }
 
     let landmarks;

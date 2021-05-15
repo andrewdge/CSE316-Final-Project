@@ -39,7 +39,6 @@ const CreateAccount = (props) => {
 				props.fetchUser();
 				history.push('/home');
 			}
-
 		};
 	};
 

@@ -35,7 +35,8 @@ const MapContents = (props) => {
                     <WCContent style={{ display: 'flex', flexDirection: 'row'}}>
                         <WCard className='map-entries' raised style={{ backgroundColor: 'salmon', width: '50%', height: '100%' }}>
                             <MapList 
-                                maps={props.maps} deleteMap={props.deleteMap} updateMapName={props.updateMapName} bubbleMapToTop={props.bubbleMapToTop}
+                                maps={props.maps} deleteMap={props.deleteMap} updateMapName={props.updateMapName} 
+                                bubbleMapToTop={props.bubbleMapToTop} refetch={props.refetch}
                             />
                         </WCard>
                         <WCard raised style={{ backgroundColor: 'white', width: '50%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end'}}>

@@ -85,9 +85,8 @@ const NavbarOptions = (props) => {
                     ;
             } else if (props.lineage.length < 6){
                 breadcrumbs = props.lineage.map( (parent, index) => 
-                            index !== props.lineage.length-1 ? 
-                            ( 
-                                <>
+                            index === 0 ?
+                                <div key={index} style={{ display: 'flex', alignItems: 'center'}}>
                                     <Link to={{ pathname: `/maps/${parent._id}`}} onClick={props.clearTPS}>
                                         <WButton>
                                             {parent.name}
@@ -96,16 +95,29 @@ const NavbarOptions = (props) => {
                                     <div>
                                         {'>'}
                                     </div>
-                                </>
-                            )
+                                </div>
                             :
-                            <Link to={{ pathname: `/maps/${parent._id}`}} onClick={props.clearTPS}>
-                                <WButton >
-                                    {parent.name}
-                                </WButton>
-                            </Link>
+                                index === props.lineage.length-1 ?
+                                <div key={index} style={{ display: 'flex', alignItems: 'center'}}>
+                                    <Link to={{ pathname: `/regions/${parent._id}`}} onClick={props.clearTPS}>
+                                        <WButton >
+                                            {parent.name}
+                                        </WButton>
+                                    </Link>
+                                </div>
+                                :
+                                <div key={index} style={{ display: 'flex', alignItems: 'center'}}>
+                                    <Link to={{ pathname: `/regions/${parent._id}`}} onClick={props.clearTPS}>
+                                        <WButton>
+                                            {parent.name}
+                                        </WButton>
+                                    </Link>
+                                    <div>
+                                        {'>'}
+                                    </div>
+                                </div>
                             
-                            );
+                        );
             } else {
                 breadcrumbs = 
                     <>
@@ -117,7 +129,7 @@ const NavbarOptions = (props) => {
                         <div>
                             {'>'}
                         </div>
-                        <Link to={{ pathname: `/maps/${props.lineage[1]._id}`}} onClick={props.clearTPS}>
+                        <Link to={{ pathname: `/regions/${props.lineage[1]._id}`}} onClick={props.clearTPS}>
                             <WButton>
                                 {props.lineage[1].name}
                             </WButton>
@@ -125,7 +137,7 @@ const NavbarOptions = (props) => {
                         <div>
                             {'>'}
                         </div>
-                        <Link to={{ pathname: `/maps/${props.lineage[2]._id}`}} onClick={props.clearTPS}>
+                        <Link to={{ pathname: `/regions/${props.lineage[2]._id}`}} onClick={props.clearTPS}>
                             <WButton>
                                 {props.lineage[2].name}
                             </WButton>
@@ -139,7 +151,7 @@ const NavbarOptions = (props) => {
                         <div>
                             {`>`}
                         </div>
-                        <Link to={{ pathname: `/maps/${props.lineage[props.lineage.length-3]._id}`}} onClick={props.clearTPS}>
+                        <Link to={{ pathname: `/regions/${props.lineage[props.lineage.length-3]._id}`}} onClick={props.clearTPS}>
                             <WButton>
                                 {props.lineage[props.lineage.length-3].name}
                             </WButton>
@@ -147,7 +159,7 @@ const NavbarOptions = (props) => {
                         <div>
                             {'>'}
                         </div>
-                        <Link to={{ pathname: `/maps/${props.lineage[props.lineage.length-2]._id}`}} onClick={props.clearTPS}>
+                        <Link to={{ pathname: `/regions/${props.lineage[props.lineage.length-2]._id}`}} onClick={props.clearTPS}>
                             <WButton>
                                 {props.lineage[props.lineage.length-2].name}
                             </WButton>
@@ -155,7 +167,7 @@ const NavbarOptions = (props) => {
                         <div>
                             {'>'}
                         </div>
-                        <Link to={{ pathname: `/maps/${props.lineage[props.lineage.length-1]._id}`}} onClick={props.clearTPS}>
+                        <Link to={{ pathname: `/regions/${props.lineage[props.lineage.length-1]._id}`}} onClick={props.clearTPS}>
                             <WButton>
                                 {props.lineage[props.lineage.length-1].name}
                             </WButton>

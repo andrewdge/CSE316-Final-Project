@@ -62,6 +62,26 @@ module.exports = {
             } else {
                 return ([]);
             }
+        },
+        getAllSubregions: async ( _, args ) => {
+            const { _id, currId } = args;
+            const currObjectId = new ObjectId(currId);
+            let regions = [];
+            const getChildRegions = async (_id, currObjectId) => {
+                const objectId = new ObjectId(_id);
+                const reg = await Region.findOne({ _id: objectId});
+                if (reg) {
+                    regions.push(reg);
+                    await Promise.all(reg.subregions.map( async(sub) => {
+                        if (sub.toString() !== currObjectId.toString()) {
+                            await getChildRegions(sub, currObjectId);
+                        }
+                    }));
+                }
+            }
+            await getChildRegions(_id, currObjectId);
+            if (regions) return regions;
+            return ([]);
         }
     },
     Mutation: {
@@ -102,6 +122,19 @@ module.exports = {
         updateRegion: async ( _, args ) => {
             const { _id, field, value } = args; 
             const objectId = new ObjectId(_id);
+            if (field === 'parentRegion') {
+                const region = await Region.findOne({ _id: objectId });
+                const parent = await Region.findOne({ _id: region.parentRegion });
+                let subregions = parent.subregions;
+                subregions = subregions.filter( region => region.toString() !== _id);
+                await Region.updateOne({_id: parent._id }, { subregions: subregions});
+
+                const newParentObjectId = new ObjectId(value);
+                const newParent = await Region.findOne({ _id: newParentObjectId });
+                const parentSubregions = newParent.subregions;
+                parentSubregions.push(objectId);
+                await Region.updateOne({ _id: newParentObjectId }, {subregions: parentSubregions});
+            }
             const updated = await Region.updateOne({ _id: objectId }, { [field]: value });
             if (updated) return value;
             else return "";

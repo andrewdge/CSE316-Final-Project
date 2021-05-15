@@ -5,6 +5,7 @@ import NavbarOptions from '../navbar/NavbarOptions';
 import { useParams, useHistory, Link, useLocation } from 'react-router-dom';
 import { GET_REGION_BY_ID } 				from '../../cache/queries';
 import LandmarkEntry from '../landmarks/LandmarkEntry';
+import ChangeParent from '../modals/ChangeParent';
 
 const RegionViewer = (props) => {
 
@@ -17,7 +18,12 @@ const RegionViewer = (props) => {
     const getData = async () => {
         await props.getRegionById({ variables: { _id: _id }});
         await props.getLineage({ variables: {_id: _id }});
+        if (props.lineage[0]) {
+            let id = props.lineage[0]._id;
+            await props.getAllSubregions({ variables: { _id: id, currId: _id }});
+        }
     }
+
 
     useEffect(() => {
         getData();
@@ -54,17 +60,28 @@ const RegionViewer = (props) => {
     const [ctrl, setCtrl]              = useState(false);
 	const [y, setY]                    = useState(false);
 	const [z, setZ]                    = useState(false);
-
     
 
     const [landmarkName, setLandmarkName] = useState('');
     const [events, setEvents] = useState([]);
+    const [showChangeParent, setShowChangeParent]         = useState(false);
+
+    const handleShowChangeParent = () => {
+        setShowChangeParent(!showChangeParent);
+    }
+
+    const changeParent = async (entry) => {
+        //_id, field, value, prev
+        await props.changeParent(props.activeRegion._id, 'parentRegion', entry._id, props.activeRegion.parentRegion._id);
+        await props.refetchRegions();
+        history.go(0);
+    }
 
     const handleAddLandmark = async () => {
         events.forEach(e => e.target.value='');
         setEvents([]);
         await props.addLandmark(props.activeRegion._id, landmarkName, props.activeRegion.name);
-        getData();
+        await props.refetchRegions();
     };
 
     const updateNameInput = (e) => {
@@ -132,8 +149,6 @@ const RegionViewer = (props) => {
         }
     }
 
-    
-
     return (
         <>
             { props.activeRegion &&
@@ -188,7 +203,10 @@ const RegionViewer = (props) => {
                                                 </Link>
                                             </div>
                                             <div className='region-attribute'>
-                                                Parent Region: {props.activeRegion.parentRegion !== null ? props.activeRegion.parentRegion.name : 'No Parent Region'}
+                                                Parent Region: 
+                                                <WButton onClick={handleShowChangeParent} style={{ backgroundColor: '#40454e', color: 'lightgreen', fontSize: '24px'}}>
+                                                    {props.activeRegion.parentRegion !== null ? props.activeRegion.parentRegion.name : 'No Parent Region'}
+                                                </WButton>
                                             </div>
                                             <div className='region-attribute'>
                                                 Region Capital: {props.activeRegion.capital !== '' ? props.activeRegion.capital : 'No Capital'}
@@ -236,6 +254,11 @@ const RegionViewer = (props) => {
                         </div>
                     </WLMain>
                 </WLayout>
+            }
+            {showChangeParent && 
+                <ChangeParent changeParentFunction={changeParent} name={props.activeRegion.name} cancelFunction={handleShowChangeParent} 
+                    changeableSubregions={props.changeableSubregions}
+                />
             }
         </>
     );
