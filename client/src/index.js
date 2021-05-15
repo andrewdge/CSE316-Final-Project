@@ -20,6 +20,11 @@ const cache = new InMemoryCache({
 						return incoming
 					}
 				},
+				getRegionById: {
+					merge(existing, incoming){
+						return incoming
+					}
+				}
 			},
 		},
 	},

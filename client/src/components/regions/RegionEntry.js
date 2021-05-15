@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { WCard, WRow, WCol, WButton, WInput } from 'wt-frontend';
 import { Link, useHistory } from 'react-router-dom';
 import Delete from '../modals/Delete';
@@ -8,13 +8,25 @@ const RegionEntry = (props) => {
     const name = props.entry.name;
     const capital = props.entry.capital;
     const leader = props.entry.leader;
+
+    const isActive = props.index === props.row;
     const [editingName, toggleNameEdit] = useState(false);
     const [editingCapital, toggleCapitalEdit] = useState(false);
     const [editingLeader, toggleLeaderEdit] = useState(false);
     const [showDelete, setShowDelete]         = useState(false);
 
+    const nameRef = useRef();
+
+    useEffect(() => {
+        toggleNameEdit(isActive && (props.col === 0));
+        toggleCapitalEdit(isActive && (props.col === 1));
+        toggleLeaderEdit(isActive && (props.col === 2));
+    },[props.row, props.col])
+
     const handleNameEdit = (e) => {
         toggleNameEdit(false);
+        props.setRow(-1);
+        props.setCol(-1);
         const newName = e.target.value ? e.target.value : 'Untitled Region';
         const prevName = name;
         props.editRegion(props.entry._id, 'name', newName, prevName);
@@ -22,6 +34,8 @@ const RegionEntry = (props) => {
 
     const handleCapitalEdit = (e) => {
         toggleCapitalEdit(false);
+        props.setRow(-1);
+        props.setCol(-1);
         const newCapital = e.target.value ? e.target.value : 'Untitled Capital';
         const prevCapital = capital;
         props.editRegion(props.entry._id, 'capital', newCapital, prevCapital);
@@ -29,17 +43,140 @@ const RegionEntry = (props) => {
 
     const handleLeaderEdit = (e) => {
         toggleLeaderEdit(false);
+        props.setRow(-1);
+        props.setCol(-1);
         const newLeader = e.target.value ? e.target.value : 'Unnamed Leader';
         const prevLeader = leader;
         props.editRegion(props.entry._id, 'leader', newLeader, prevLeader);
     };
 
 
+    const startNameEdit = () => {
+        toggleNameEdit(!editingName);
+        props.setRow(props.index);
+        props.setCol(0);
+    };
+    
+    const startCapitalEdit = () => {
+        toggleCapitalEdit(!editingCapital);
+        props.setRow(props.index);
+        props.setCol(1);
+    };
+
+    const startLeaderEdit = () => {
+        toggleLeaderEdit(!editingLeader);
+        props.setRow(props.index);
+        props.setCol(2);
+    };
+
+    useEffect(() => {
+        function handleKeyPress(e) {
+            if (editingName){
+                if (e.key === 'ArrowDown'){
+                    if (props.row < props.len-1) {
+                        handleNameEdit(e);
+                        props.setRow(props.index+1);
+                        props.setCol(0);
+                    }
+                }
+                if (e.key === 'ArrowUp'){
+                    if (props.row > 0) {
+                        handleNameEdit(e);
+                        props.setRow(props.index-1);
+                        props.setCol(0);
+                    }
+                }
+                if (e.key === 'ArrowLeft'){
+                    if (props.col > 0) {
+                        handleNameEdit(e);
+                        props.setRow(props.index);
+                        props.setCol(props.col-1);
+                    }
+                }
+                if (e.key === 'ArrowRight'){
+                    if (props.col < 2) {
+                        handleNameEdit(e);
+                        props.setRow(props.index);
+                        props.setCol(props.col+1);
+                    }
+                }
+            }
+            if (editingCapital){
+                if (e.key === 'ArrowDown'){
+                    if (props.row < props.len-1) {
+                        handleCapitalEdit(e);
+                        props.setRow(props.index+1);
+                        props.setCol(1);
+                    }
+                }
+                if (e.key === 'ArrowUp'){
+                    if (props.row > 0) {
+                        handleCapitalEdit(e);
+                        props.setRow(props.index-1);
+                        props.setCol(1);
+                    }
+                }
+                if (e.key === 'ArrowLeft'){
+                    if (props.col > 0) {
+                        handleCapitalEdit(e);
+                        props.setRow(props.index);
+                        props.setCol(props.col-1);
+                    }
+                }
+                if (e.key === 'ArrowRight'){
+                    if (props.col < 2) {
+                        handleCapitalEdit(e);
+                        props.setRow(props.index);
+                        props.setCol(props.col+1);
+                    }
+                }
+            }
+            if (editingLeader){
+                if (e.key === 'ArrowDown'){
+                    if (props.row < props.len-1) {
+                        handleLeaderEdit(e);
+                        props.setRow(props.index+1);
+                        props.setCol(2);
+                    }
+                }
+                if (e.key === 'ArrowUp'){
+                    if (props.row > 0) {
+                        handleLeaderEdit(e);
+                        props.setRow(props.index-1);
+                        props.setCol(2);
+                    }
+                }
+                if (e.key === 'ArrowLeft'){
+                    if (props.col > 0) {
+                        handleLeaderEdit(e);
+                        props.setRow(props.index);
+                        props.setCol(props.col-1);
+                    }
+                }
+                if (e.key === 'ArrowRight'){
+                    if (props.col < 2) {
+                        handleLeaderEdit(e);
+                        props.setRow(props.index);
+                        props.setCol(props.col+1);
+                    }
+                }
+            }
+        }
+        document.addEventListener('keydown', handleKeyPress);
+        return () => {
+            document.removeEventListener('keydown', handleKeyPress);
+        }
+    }, [editingName, editingCapital, editingLeader]);
+
+    // console.log(props.row);
+    // console.log(props.col);
+
+
     const history = useHistory();
 
     const deleteSubregion = async () =>{
         await props.deleteSubregion(props.entry);
-        await props.getData();
+        await props.refetchRegions();
     }
 
     const handleShowDelete = () => {
@@ -86,7 +223,7 @@ const RegionEntry = (props) => {
                                     wType="outlined" inputClass="table-input-class"
                                 />
                                 : <div className="table-text"
-                                    onClick={() => toggleNameEdit(!editingName)}
+                                    onClick={startNameEdit}
                                 >{name}
                                 </div>
                         }
@@ -100,7 +237,7 @@ const RegionEntry = (props) => {
                                     wType="outlined" inputClass="table-input-class"
                                 />
                                 : <div className="table-text"
-                                    onClick={() => toggleCapitalEdit(!editingCapital)}
+                                    onClick={startCapitalEdit}
                                 >{capital}
                                 </div>
                         }
@@ -114,7 +251,7 @@ const RegionEntry = (props) => {
                                     wType="outlined" inputClass="table-input-class"
                                 />
                                 : <div className="table-text"
-                                    onClick={() => toggleLeaderEdit(!editingLeader)}
+                                    onClick={startLeaderEdit}
                                 >{leader}
                                 </div>
                         }

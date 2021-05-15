@@ -52,16 +52,17 @@ const RegionSpreadsheet = (props) => {
 		return () => {}
     });
 
+    
+
     const [ctrl, setCtrl]              = useState(false);
 	const [y, setY]                    = useState(false);
 	const [z, setZ]                    = useState(false);
+    const [row, setRow]                = useState(-1);
+    const [col, setCol]                = useState(-1);
 
     const [isNameAscending, nameToggleAscending] = useState(false);
     const [isCapitalAscending, capitalToggleAscending] = useState(false);
     const [isLeaderAscending, leaderToggleAscending] = useState(false);
-
-    
-
     
     const addNewRegion = async () => {
         await props.addNewRegion(props.activeRegion._id);
@@ -107,11 +108,11 @@ const RegionSpreadsheet = (props) => {
                                             </WButton>
                                         </WCol>
                                         <WCol size='8'>
-                                            <WButton className='table-entry-buttons' /*onClick={props.undo}*/ onClick={props.canUndo ? props.undo : () => {} } wType="texted" shape="rounded" disabled={!props.canUndo}>
+                                            <WButton className='table-entry-buttons' onClick={props.canUndo ? props.undo : () => {} } wType="texted" shape="rounded" disabled={!props.canUndo}>
                                                 <i className="material-icons">undo</i>
                                             </WButton>
 
-                                            <WButton className='table-entry-buttons' /*onClick={props.redo}*/ onClick={props.canRedo ? props.redo : () => {} } wType="texted" shape="rounded" disabled={!props.canRedo}>
+                                            <WButton className='table-entry-buttons' onClick={props.canRedo ? props.redo : () => {} } wType="texted" shape="rounded" disabled={!props.canRedo}>
                                                 <i className="material-icons">redo</i>
                                             </WButton>
                                         </WCol>
@@ -172,7 +173,8 @@ const RegionSpreadsheet = (props) => {
                                             <RegionEntry 
                                                 key={entry._id} entry={entry} index={index} deleteSubregion={props.deleteSubregion} 
                                                 refetchRegions={props.refetchRegions} editRegion={props.editRegion} clearTPS={props.clearTPS}
-                                                getData={getData}
+                                                getData={getData} row={row} col={col} setRow={setRow} setCol={setCol}
+                                                len={props.subregions.length}
                                             />
                                         ))
                                     }

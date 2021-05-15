@@ -90,7 +90,7 @@ const Homescreen = (props) => {
     }
 
     const refetchRegions= async () => {
-        const {loading, error, data } = await regionRefetch();
+        const {loading, error, data } = await regionRefetch({fetchPolicy: 'cache-and-network'});
         if (error) { console.log(error);}
 		if (data) {
 			activeRegion = data.getRegionById;
@@ -105,7 +105,6 @@ const Homescreen = (props) => {
 
     const tpsUndo = async () => {
 		const retVal = await props.tps.undoTransaction();
-        console.log(props.tps.transactions);
 		refetchRegions();
 		pollUndo();
 		pollRedo();
@@ -266,9 +265,9 @@ const Homescreen = (props) => {
         props.tps.clearAllTransactions();
         pollUndo();
         pollRedo();
-        Object.keys(localStorage).forEach( (region) => {
-            console.log(JSON.parse(localStorage.getItem(region)));
-        });
+        // Object.keys(localStorage).forEach( (region) => {
+        //     console.log(JSON.parse(localStorage.getItem(region)));
+        // });
         Object.keys(localStorage).forEach( async(region) => {
             DeleteRegion({ variables: { _id: region }});
         });
