@@ -46,14 +46,14 @@ const Homescreen = (props) => {
 	// 	regions = GetDBRegions.data.getAllRegions;
 	// }
 
-    const {loading: mapsLoading, error: mapsError, data: mapsData, refetch: mapsRefetch} = useQuery(GET_DB_MAPS, {fetchPolicy: 'network-only'});
+    const {loading: mapsLoading, error: mapsError, data: mapsData, refetch: mapsRefetch} = useQuery(GET_DB_MAPS);
 	// if(loading) { console.log('loading'); }
 	if(mapsError) { console.log(mapsError); }
 	if(mapsData) { 
 		maps = mapsData.getAllMaps;
 	}
 
-    const [getRegionById, {loading: regionLoading, error: regionError, data: regionData, refetch: regionRefetch}] = useLazyQuery(GET_REGION_BY_ID);
+    const [getRegionById, {loading: regionLoading, error: regionError, data: regionData, refetch: regionRefetch}] = useLazyQuery(GET_REGION_BY_ID, {fetchPolicy: 'cache-and-network'});
     if (regionError) { 
         console.log(regionError); 
     }
@@ -64,7 +64,7 @@ const Homescreen = (props) => {
     }
 
 
-    const [getLineage, {loading: lineageLoading, error: lineageError, data: lineageData, refetch: lineageRefetch}] = useLazyQuery(GET_LINEAGE, {fetchPolicy: 'network-only'});
+    const [getLineage, {loading: lineageLoading, error: lineageError, data: lineageData, refetch: lineageRefetch}] = useLazyQuery(GET_LINEAGE, {fetchPolicy: 'cache-and-network'});
     if (lineageError) {
         console.log(lineageError);
     }
@@ -72,7 +72,7 @@ const Homescreen = (props) => {
         lineage = lineageData.getLineage;
     }
 
-    const [getAllSubregions, {loading: subregionLoading, error: subregionError, data: subregionData, refetch: subregionRefetch}] = useLazyQuery(GET_ALL_SUBREGIONS, {fetchPolicy: 'network-only'});
+    const [getAllSubregions, {loading: subregionLoading, error: subregionError, data: subregionData, refetch: subregionRefetch}] = useLazyQuery(GET_ALL_SUBREGIONS, {fetchPolicy: 'cache-and-network'});
     if (subregionError){
         console.log(subregionError);
     }
@@ -300,7 +300,7 @@ const Homescreen = (props) => {
                             fetchUser={props.fetchUser} user={props.user} auth={auth} addNewRegion={addNewRegion} 
                             deleteSubregion={deleteSubregion} editRegion={editRegion} canUndo={canUndo} canRedo={canRedo}
                             undo={tpsUndo} redo={tpsRedo} activeRegion={activeRegion} subregions={subregions} tpsUndo={tpsUndo} tpsRedo={tpsRedo}
-                            getRegionById={getRegionById} refetchRegions={refetchRegions} clearTPS={clearTPS}
+                            getRegionById={getRegionById} refetchRegions={refetchRegions} clearTPS={clearTPS} refetchMaps={refetchMaps}
                             editRegion={editRegion} sortRegions={sortRegionsByCriteria} getLineage={getLineage} lineage={lineage}
                         />
                     </Route>
@@ -309,7 +309,7 @@ const Homescreen = (props) => {
                             fetchUser={props.fetchUser} user={props.user} auth={auth} addNewRegion={addNewRegion}
                             deleteSubregion={deleteSubregion} editRegion={editRegion} canUndo={canUndo} canRedo={canRedo}
                             undo={tpsUndo} redo={tpsRedo} activeRegion={activeRegion} subregions={subregions} tpsUndo={tpsUndo} tpsRedo={tpsRedo}
-                            getRegionById={getRegionById} refetchRegions={refetchRegions} clearTPS={clearTPS}
+                            getRegionById={getRegionById} refetchRegions={refetchRegions} clearTPS={clearTPS} refetchMaps={refetchMaps}
                             editRegion={editRegion} sortRegions={sortRegionsByCriteria} getLineage={getLineage} lineage={lineage}
                         />
                     </Route>
@@ -320,7 +320,7 @@ const Homescreen = (props) => {
                             clearTPS={clearTPS} refetchRegions={refetchRegions} canUndo={canUndo} canRedo={canRedo} undo={tpsUndo} redo={tpsRedo}
                             addLandmark={addLandmark} deleteLandmark={deleteLandmark} editLandmark={editLandmark} tpsUndo={tpsUndo} tpsRedo={tpsRedo}
                             siblings={siblings} getAllSubregions={getAllSubregions} changeableSubregions={changeableSubregions}
-                            changeParent={editRegion}
+                            changeParent={editRegion} refetchMaps={refetchMaps}
                         />
                     </Route>
                     <Redirect from="/" to={ {pathname: "/home"} } />

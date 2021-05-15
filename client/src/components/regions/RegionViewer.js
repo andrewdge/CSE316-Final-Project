@@ -74,7 +74,6 @@ const RegionViewer = (props) => {
         //_id, field, value, prev
         await props.changeParent(props.activeRegion._id, 'parentRegion', entry._id, props.activeRegion.parentRegion._id);
         await props.refetchRegions();
-        history.go(0);
     }
 
     const handleAddLandmark = async () => {
