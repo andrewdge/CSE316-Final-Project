@@ -82,6 +82,28 @@ module.exports = {
             await getChildRegions(_id, currObjectId);
             if (regions) return regions;
             return ([]);
+        },
+        getChildLandmarks: async ( _, args ) => {
+            const { _id } = args;
+            let landmarks = [];
+            const objectId = new ObjectId(_id);
+            const region = await Region.findOne({ _id: objectId });
+            const getLandmarks = async (_id) => {
+                const objectId = new ObjectId(_id);
+                const region = await Region.findOne({ _id: objectId });
+                if (region) {
+                    const lm = await Landmark.find({ parentRegion: objectId});
+                    landmarks = landmarks.concat(lm);
+                    for (let i = 0; i < region.subregions.length; i++) {
+                        await getLandmarks(region.subregions[i]);
+                    }
+                }
+            };
+            for (let i = 0; i < region.subregions.length; i++){
+                await getLandmarks(region.subregions[i]);
+            }
+            if (landmarks) return landmarks;
+            return ([]);
         }
     },
     Mutation: {

@@ -61,7 +61,7 @@ const typeDefs = gql `
 		getRegionById(_id: String!): RegionResponse
 		getLineage(_id: String!): [Region]
 		getAllSubregions(_id: String!, currId: String!): [Region]
-		# getLandmarkById(_id: String!): Landmark
+		getChildLandmarks(_id: String!): [Landmark]
 	}
 	extend type Mutation {
 		addRegion(region: RegionInput!, regionExists: Boolean!): String

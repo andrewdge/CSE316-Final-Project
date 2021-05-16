@@ -5,7 +5,7 @@ import CreateAccount from '../modals/CreateAccount';
 import MapContents from '../maps/MapContents';
 import RegionSpreadsheet from '../regions/RegionSpreadsheet';
 import RegionViewer from '../regions/RegionViewer';
-import { GET_DB_MAPS, GET_DB_REGIONS, GET_LINEAGE, GET_REGION_BY_ID, GET_ALL_SUBREGIONS } 				from '../../cache/queries';
+import { GET_DB_MAPS, GET_DB_REGIONS, GET_LINEAGE, GET_REGION_BY_ID, GET_ALL_SUBREGIONS, GET_CHILD_LANDMARKS } 				from '../../cache/queries';
 import * as mutations 					from '../../cache/mutations';
 import { useMutation, useQuery, useLazyQuery } 		from '@apollo/client';
 import Welcome from '../welcome/Welcome';
@@ -25,6 +25,7 @@ const Homescreen = (props) => {
     let siblings = null;
     let lineage = [];
     let changeableSubregions = [];
+    let landmarks = [];
     const [canUndo, setUndo]                  = useState(false);
     const [canRedo, setRedo]                  = useState(false);
     const [AddRegion]                         = useMutation(mutations.ADD_REGION);
@@ -78,6 +79,14 @@ const Homescreen = (props) => {
     }
     if (subregionData){
         changeableSubregions = subregionData.getAllSubregions;
+    }
+
+    const [getChildLandmarks, {loading: landmarkLoading, error: landmarkError, data: landmarkData, refetch: landmarkRefetch}] = useLazyQuery(GET_CHILD_LANDMARKS, {fetchPolicy: 'cache-and-network'});
+    if (landmarkError) {
+        console.log(landmarkError);
+    }
+    if (landmarkData) {
+        landmarks = landmarkData.getChildLandmarks;
     }
 
     const refetchMaps = async () => {
@@ -315,7 +324,7 @@ const Homescreen = (props) => {
                             clearTPS={clearTPS} refetchRegions={refetchRegions} canUndo={canUndo} canRedo={canRedo} undo={tpsUndo} redo={tpsRedo}
                             addLandmark={addLandmark} deleteLandmark={deleteLandmark} editLandmark={editLandmark} tpsUndo={tpsUndo} tpsRedo={tpsRedo}
                             siblings={siblings} getAllSubregions={getAllSubregions} changeableSubregions={changeableSubregions}
-                            changeParent={editRegion} refetchMaps={refetchMaps}
+                            changeParent={editRegion} refetchMaps={refetchMaps} landmarks={landmarks} getChildLandmarks={getChildLandmarks}
                         />
                     </Route>
                     <Redirect from="/" to={ {pathname: "/home"} } />

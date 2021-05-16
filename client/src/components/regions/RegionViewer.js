@@ -18,6 +18,7 @@ const RegionViewer = (props) => {
     const getData = async () => {
         await props.getRegionById({ variables: { _id: _id }});
         await props.getLineage({ variables: {_id: _id }});
+        await props.getChildLandmarks({ variables: {_id: _id }});
         if (props.lineage[0]) {
             let id = props.lineage[0]._id;
             await props.getAllSubregions({ variables: { _id: id, currId: _id }});
@@ -31,16 +32,14 @@ const RegionViewer = (props) => {
 
     let imageAddr;
     let addr;
-    if (props.lineage) {
+    if (props.lineage && props.activeRegion) {
         addr = props.lineage.map(reg => reg.name).join('/');
         if (addr.length > 0) {
             imageAddr =  "/" + addr + "/" + props.activeRegion.name + " Flag.png";
-            console.log(imageAddr);
         } else {
             imageAddr = addr + "/" + props.activeRegion.name + " Flag.png";
         }
     }
-    
 
     useEffect(() => {
         document.onkeydown = (e) => {
@@ -238,11 +237,18 @@ const RegionViewer = (props) => {
                                     </WCHeader>
                                     <WCContent>
                                         <WCard className='map-entries' raised style={{ width: '100%', height: '89%', backgroundColor: 'black' }}>
-                                            {props.activeRegion.landmarks.map( (entry, index) => (
-                                                <LandmarkEntry key={entry._id} entry={entry} index={index} deleteLandmark={props.deleteLandmark}
-                                                editLandmark={props.editLandmark}
-                                                />
-                                            ))}
+                                            <>
+                                                {props.activeRegion.landmarks.map( (entry, index) => (
+                                                    <LandmarkEntry key={entry._id} entry={entry} index={index} deleteLandmark={props.deleteLandmark}
+                                                    editLandmark={props.editLandmark} canDelete={true}
+                                                    />
+                                                ))}
+                                                {props.landmarks.map( (entry, index) => (
+                                                    <LandmarkEntry key={entry._id} entry={entry} index={index} deleteLandmark={props.deleteLandmark}
+                                                    editLandmark={props.editLandmark} canDelete={false}
+                                                    />
+                                                ))}
+                                            </>
                                         </WCard>
                                         <WCard raised style={{ backgroundColor: 'white', width: '100%', height: '11%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end'}}>
                                             <WRow style={{ height: '50px'}}>

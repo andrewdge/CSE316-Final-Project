@@ -67,6 +67,17 @@ export const GET_ALL_SUBREGIONS = gql`
 	}
 `;
 
+export const GET_CHILD_LANDMARKS = gql`
+	query GetChildLandmarks($_id: String!) {
+		getChildLandmarks(_id: $_id) {
+			_id
+			name
+			location
+			parentRegion
+		}
+	}
+`;
+
 export const GET_REGION_BY_ID = gql`
 	query GetRegionById($_id: String!) {
 		getRegionById(_id: $_id) {

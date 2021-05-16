@@ -23,9 +23,15 @@ const LandmarkEntry = (props) => {
 
     return (
         <WRow style={{ height: '40px', width: '100%', display: 'flex'}}>
-            <WButton size='small' style={{ color: 'red', backgroundColor: 'black' }} onClick={handleDeleteLandmark} shape='rounded' hoverAnimation='darken' clickAnimation='ripple-light'>
-                <i className='material-icons'>clear</i>
-            </WButton>
+            {
+                props.canDelete ?
+                    <WButton size='small' style={{ color: 'red', backgroundColor: 'black' }} onClick={handleDeleteLandmark} shape='rounded' hoverAnimation='darken' clickAnimation='ripple-light'>
+                        <i className='material-icons'>clear</i>
+                    </WButton>
+                :
+                    <div style={{ marginLeft: '55px'}}></div>
+            }
+            
             <div style={{ color: 'lightgrey', fontSize: '1.125rem', marginLeft: '30px', display: 'flex', alignItems: 'center' }}>
                 {
                     editingName
