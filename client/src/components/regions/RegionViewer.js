@@ -29,6 +29,19 @@ const RegionViewer = (props) => {
         getData();
     }, [props.subregions, _id, location.pathname]);
 
+    let imageAddr;
+    let addr;
+    if (props.lineage) {
+        addr = props.lineage.map(reg => reg.name).join('/');
+        if (addr.length > 0) {
+            imageAddr =  "/" + addr + "/" + props.activeRegion.name + " Flag.png";
+            console.log(imageAddr);
+        } else {
+            imageAddr = addr + "/" + props.activeRegion.name + " Flag.png";
+        }
+    }
+    
+
     useEffect(() => {
         document.onkeydown = (e) => {
 			if (e.key === 'Control') {
@@ -161,7 +174,7 @@ const RegionViewer = (props) => {
                     <WLMain>
                         <div style={{ height: '90%', width: '100%'}}>
                             <WRow style={{ width: '90%', marginTop: '2%', marginLeft: '5%'}}>
-                                <WCol size='1'>
+                                <WCol size='1' style={{ display: 'flex' }}>
                                     <WButton className='table-entry-buttons' onClick={props.canUndo ? props.undo : () => {} } wType="texted" shape="rounded" disabled={!props.canUndo}>
                                         <i className="material-icons">undo</i>
                                     </WButton>
@@ -189,8 +202,8 @@ const RegionViewer = (props) => {
                             <div style={{ width: "90%", height: "82%", marginTop: '5px', marginLeft: '5%', marginBottom: '1%', display: 'flex', flexDirection: 'row' }}>
                                 <div style={{ width: '50%', height: '100%'}}>
                                     <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
-                                        <div style={{ width: '50%', height: '50%'}}>
-                                            image here
+                                        <div style={{ width: '50%', height: '200px'}}>
+                                            <img  src={imageAddr} alt='No Flag :('></img>
                                         </div>
                                         <div style={{ width: '100%', height: '50%'}}>
                                             <div className='region-attribute'>

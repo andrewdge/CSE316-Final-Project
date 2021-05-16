@@ -63,6 +63,9 @@ const RegionSpreadsheet = (props) => {
     const [isNameAscending, nameToggleAscending] = useState(false);
     const [isCapitalAscending, capitalToggleAscending] = useState(false);
     const [isLeaderAscending, leaderToggleAscending] = useState(false);
+    let imageAddr = props.lineage.map(reg => reg.name).join('/');
+    
+    
     
     const addNewRegion = async () => {
         await props.addNewRegion(props.activeRegion._id);
@@ -174,7 +177,7 @@ const RegionSpreadsheet = (props) => {
                                                 key={entry._id} entry={entry} index={index} deleteSubregion={props.deleteSubregion} 
                                                 refetchRegions={props.refetchRegions} editRegion={props.editRegion} clearTPS={props.clearTPS}
                                                 getData={getData} row={row} col={col} setRow={setRow} setCol={setCol}
-                                                len={props.subregions.length}
+                                                len={props.subregions.length} imageAddr={imageAddr}
                                             />
                                         ))
                                     }

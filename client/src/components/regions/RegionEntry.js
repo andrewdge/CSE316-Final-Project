@@ -15,7 +15,17 @@ const RegionEntry = (props) => {
     const [editingLeader, toggleLeaderEdit] = useState(false);
     const [showDelete, setShowDelete]         = useState(false);
 
-    const nameRef = useRef();
+    let imageAddr;
+    if (props.entry) {
+        if (props.imageAddr.length > 0) {
+            imageAddr =  "/" + props.imageAddr + "/" + props.entry.parentRegion.name + "/" + props.entry.name + " Flag.png";
+        } else {
+            if (props.entry.parentRegion) { 
+                imageAddr = props.imageAddr + "/" + props.entry.parentRegion.name + "/" + props.entry.name + " Flag.png";
+            }
+        }   
+    }
+    
 
     useEffect(() => {
         toggleNameEdit(isActive && (props.col === 0));
@@ -257,7 +267,7 @@ const RegionEntry = (props) => {
                         }
                     </WCol>
                     <WCol size='2' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                        flag here
+                        <img style={{ maxHeight: '50px'}} src={imageAddr} alt='No Flag :('></img>
                     </WCol>
                     <WCol size='3' style={{ display: 'flex'}}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '400px' }}>
