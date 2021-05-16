@@ -94,7 +94,6 @@ const Homescreen = (props) => {
         if (error) console.log(error);
         if (data) {
             maps = data.getAllMaps;
-            console.log(maps);
         }
     }
 

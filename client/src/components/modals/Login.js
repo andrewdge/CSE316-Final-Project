@@ -29,7 +29,6 @@ const Login = (props) => {
 			return;
 		}
 		if (data) {
-			console.log('hi');
 			props.fetchUser();
 			props.refetch();
 			history.push('/home');

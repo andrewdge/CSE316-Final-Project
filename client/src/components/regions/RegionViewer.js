@@ -204,7 +204,7 @@ const RegionViewer = (props) => {
                                         <div style={{ width: '50%', height: '200px'}}>
                                             <img  src={imageAddr} alt='No Flag :('></img>
                                         </div>
-                                        <div style={{ width: '100%', height: '50%'}}>
+                                        <div style={{ width: '100%', height: '50%', marginTop: '10px'}}>
                                             <div className='region-attribute'>
                                                 Region Name: 
                                                 <Link to={{ pathname: `/regions/${props.activeRegion._id}` }} onClick={props.clearTPS} >
