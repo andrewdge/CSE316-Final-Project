@@ -262,7 +262,6 @@ const RegionViewer = (props) => {
                                                 <WCol size='9'>
                                                     <WInput className='modal-input' style={{ color: 'black' }} onBlur={updateNameInput} name='landmarkname' labelAnimation="up" 
                                                     barAnimation="solid" labelText="Enter Landmark Name Here" hoverAnimation='solid' wType="outlined" inputType='text' />
-                                                    
                                                 </WCol>
                                             </WRow>
                                         </WCard>

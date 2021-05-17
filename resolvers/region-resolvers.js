@@ -255,6 +255,12 @@ module.exports = {
                 objectId = new ObjectId();
             }
             const { name, location, parentRegion, owner } = landmark;
+
+            const check = await Landmark.findOne({ name: name});
+            if (check) {
+                return 'found';
+            } 
+
             const newLandmark = new Landmark({
                 _id: objectId,
                 name: name,
