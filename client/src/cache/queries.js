@@ -78,6 +78,12 @@ export const GET_CHILD_LANDMARKS = gql`
 	}
 `;
 
+export const DOES_LANDMARK_EXIST = gql`
+	query DoesLandmarkExist($name: String!) {
+		doesLandmarkExist(name: $name) 
+	}
+`;
+
 export const GET_REGION_BY_ID = gql`
 	query GetRegionById($_id: String!) {
 		getRegionById(_id: $_id) {

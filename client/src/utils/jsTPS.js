@@ -109,11 +109,7 @@ export class UpdateLandmark_Transaction extends jsTPS_Transaction {
         this.opcode === 0 ? { data } = await this.deleteFunction({ variables: { _id: this.landmark._id }})
 						  : { data } = await this.addFunction({ variables: { landmark: this.landmark, landmarkExists: false }});  
         if(this.opcode !== 0) {
-            if (data.addLandmark !== 'found') { 
-                this.landmark._id = data.addLandmark;
-            } else {
-                alert('This landmark already exists!');
-            }
+            this.landmark._id = data.addLandmark;
         }
 		return data;
     }

@@ -88,11 +88,20 @@ const RegionViewer = (props) => {
         await props.refetchRegions();
     }
 
+    useEffect(() => {
+        props.findLandmarkById({ variables: { name: landmarkName }});
+    }, [landmarkName]);
+
     const handleAddLandmark = async () => {
         events.forEach(e => e.target.value='');
         setEvents([]);
-        await props.addLandmark(props.activeRegion._id, landmarkName, props.activeRegion.name);
-        await props.refetchRegions();
+        if (props.landmarkExists) {
+            alert('This landmark already exists!');
+            return;
+        } else {
+            await props.addLandmark(props.activeRegion._id, landmarkName, props.activeRegion.name);
+            await props.refetchRegions();
+        }
     };
 
     const updateNameInput = (e) => {

@@ -23,18 +23,25 @@ module.exports = {
             if (region) {
                 let subregions = await Promise.all(region.subregions.map( async (subregion) => {
                     let sub = await (await Region.findOne({_id: subregion})).toJSON();
-                    let landmarks = await Promise.all(sub.landmarks.map( async (landmark) => {
-                        return await Landmark.findOne({_id: landmark });
-                    }));
-                    sub.landmarks = landmarks;
-                    let parent = await Region.findOne({_id: sub.parentRegion });
-                    sub.parentRegion = parent;
-                    return sub;
+                    if (sub) {
+                        let landmarks = await Promise.all(sub.landmarks.map( async (landmark) => {
+                            return await Landmark.findOne({_id: landmark });
+                        }));
+                        sub.landmarks = landmarks;
+                        let parent = await Region.findOne({_id: sub.parentRegion });
+                        if (parent) { 
+                            sub.parentRegion = parent;
+                        }
+                        return sub;
+                    }
+                    
                 }));
                 region.subregions = subregions;
                 if (region.parentRegion !== null){
                     let parentRegion = await (await Region.findOne({_id: region.parentRegion })).toJSON();
-                    region.parentRegion = parentRegion;
+                    if (parentRegion) {
+                        region.parentRegion = parentRegion;
+                    }
                 }
                 let landmarks = await Promise.all(region.landmarks.map( async (landmark) => {
                     return await Landmark.findOne({_id: landmark });
@@ -106,7 +113,13 @@ module.exports = {
             }
             if (landmarks) return landmarks;
             return ([]);
-        }
+        },
+        doesLandmarkExist: async ( _, args ) => {
+            const { name } = args;
+            const found = await Landmark.findOne({ name: name });
+            if (found) return true;
+            return false;
+        },
     },
     Mutation: {
         addRegion: async ( _, args ) => {
@@ -257,12 +270,6 @@ module.exports = {
                 objectId = new ObjectId();
             }
             const { name, location, parentRegion, owner } = landmark;
-
-            const check = await Landmark.findOne({ name: name});
-            if (check) {
-                return 'found';
-            } 
-
             const newLandmark = new Landmark({
                 _id: objectId,
                 name: name,

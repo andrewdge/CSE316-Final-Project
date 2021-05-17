@@ -5,7 +5,7 @@ import CreateAccount from '../modals/CreateAccount';
 import MapContents from '../maps/MapContents';
 import RegionSpreadsheet from '../regions/RegionSpreadsheet';
 import RegionViewer from '../regions/RegionViewer';
-import { GET_DB_MAPS, GET_DB_REGIONS, GET_LINEAGE, GET_REGION_BY_ID, GET_ALL_SUBREGIONS, GET_CHILD_LANDMARKS } 				from '../../cache/queries';
+import { GET_DB_MAPS, GET_DB_REGIONS, GET_LINEAGE, GET_REGION_BY_ID, GET_ALL_SUBREGIONS, GET_CHILD_LANDMARKS, DOES_LANDMARK_EXIST } 				from '../../cache/queries';
 import * as mutations 					from '../../cache/mutations';
 import { useMutation, useQuery, useLazyQuery } 		from '@apollo/client';
 import Welcome from '../welcome/Welcome';
@@ -26,6 +26,7 @@ const Homescreen = (props) => {
     let lineage = [];
     let changeableSubregions = [];
     let landmarks = [];
+    let landmarkExists = false;
     const [canUndo, setUndo]                  = useState(false);
     const [canRedo, setRedo]                  = useState(false);
     const [AddRegion]                         = useMutation(mutations.ADD_REGION);
@@ -87,6 +88,14 @@ const Homescreen = (props) => {
     }
     if (landmarkData) {
         landmarks = landmarkData.getChildLandmarks;
+    }
+
+    const [findLandmarkById, {error, data}] = useLazyQuery(DOES_LANDMARK_EXIST, {fetchPolicy: 'cache-and-network'});
+    if (error) {
+        console.log(error);
+    }
+    if (data) {
+        landmarkExists = data.doesLandmarkExist;
     }
 
     const refetchMaps = async () => {
@@ -235,6 +244,7 @@ const Homescreen = (props) => {
     }
 
     const addLandmark = async (parentID, name, location) => {
+        
         const newLandmark= {
             _id: '',
             name: name !== '' ? name : 'Untitled Landmark',
@@ -242,10 +252,12 @@ const Homescreen = (props) => {
             parentRegion: parentID,
             owner: props.user._id
         }
+
         let opcode = 1;
 		let transaction = new UpdateLandmark_Transaction(newLandmark, opcode, AddLandmark, DeleteLandmark);
 		props.tps.addTransaction(transaction);
 		tpsRedo();
+        
     }
 
     const editLandmark = async (_id, field, value, prev) => {
@@ -324,6 +336,7 @@ const Homescreen = (props) => {
                             addLandmark={addLandmark} deleteLandmark={deleteLandmark} editLandmark={editLandmark} tpsUndo={tpsUndo} tpsRedo={tpsRedo}
                             siblings={siblings} getAllSubregions={getAllSubregions} changeableSubregions={changeableSubregions}
                             changeParent={editRegion} refetchMaps={refetchMaps} landmarks={landmarks} getChildLandmarks={getChildLandmarks}
+                            landmarkExists={landmarkExists} findLandmarkById={findLandmarkById}
                         />
                     </Route>
                     <Redirect from="/" to={ {pathname: "/home"} } />
