@@ -20,27 +20,29 @@ module.exports = {
             const { _id } = args;
             const objectId = new ObjectId(_id);
             let region = await (await Region.findOne({_id: objectId})).toJSON();
-            let subregions = await Promise.all(region.subregions.map( async (subregion) => {
-                let sub = await (await Region.findOne({_id: subregion})).toJSON();
-                let landmarks = await Promise.all(sub.landmarks.map( async (landmark) => {
+            if (region) {
+                let subregions = await Promise.all(region.subregions.map( async (subregion) => {
+                    let sub = await (await Region.findOne({_id: subregion})).toJSON();
+                    let landmarks = await Promise.all(sub.landmarks.map( async (landmark) => {
+                        return await Landmark.findOne({_id: landmark });
+                    }));
+                    sub.landmarks = landmarks;
+                    let parent = await Region.findOne({_id: sub.parentRegion });
+                    sub.parentRegion = parent;
+                    return sub;
+                }));
+                region.subregions = subregions;
+                if (region.parentRegion !== null){
+                    let parentRegion = await (await Region.findOne({_id: region.parentRegion })).toJSON();
+                    region.parentRegion = parentRegion;
+                }
+                let landmarks = await Promise.all(region.landmarks.map( async (landmark) => {
                     return await Landmark.findOne({_id: landmark });
                 }));
-                sub.landmarks = landmarks;
-                let parent = await Region.findOne({_id: sub.parentRegion });
-                sub.parentRegion = parent;
-                return sub;
-            }));
-            region.subregions = subregions;
-            if (region.parentRegion !== null){
-                let parentRegion = await (await Region.findOne({_id: region.parentRegion })).toJSON();
-                region.parentRegion = parentRegion;
+                region.landmarks = landmarks;
+                if (region) return region;
             }
-            let landmarks = await Promise.all(region.landmarks.map( async (landmark) => {
-                return await Landmark.findOne({_id: landmark });
-            }));
-            region.landmarks = landmarks;
-            if (region) return region;
-            else return {};
+            return {};
         },
         getLineage: async ( _, args) => {
             const { _id } = args;
