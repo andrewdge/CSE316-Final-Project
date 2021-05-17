@@ -1,4 +1,4 @@
-# CSE316-Spring21-HW3
+# CSE316-Spring21-FinalProject
 ##### Authors: Justin Fagan and Charlie Monnone
 ### Getting Started
 ##### Configuring .env
