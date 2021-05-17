@@ -143,13 +143,13 @@ module.exports = {
             else return '';
         },
         tempAddRegion: async ( _, args ) => {
-            const { region } = args;
+            const { region, index } = args;
             const { _id, parentRegion } = region;
             let objectId = new ObjectId(_id);
             if (parentRegion !== null){
                 const parent = await Region.findOne({ _id: parentRegion});
                 const subregions = parent.subregions;
-                subregions.push(objectId);
+                subregions.splice(index, 0, objectId);
                 const updated = await Region.updateOne({ _id: parentRegion }, {subregions: subregions});
             }
             const objectString = objectId.toString();

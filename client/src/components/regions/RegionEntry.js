@@ -181,7 +181,7 @@ const RegionEntry = (props) => {
     const history = useHistory();
 
     const deleteSubregion = async () =>{
-        await props.deleteSubregion(props.entry);
+        await props.deleteSubregion(props.entry, props.index);
         await props.refetchRegions();
     }
 

@@ -6,7 +6,7 @@ export class jsTPS_Transaction {
 /*  Handles list name changes, or any other top level details of a todolist that may be added   */
 export class UpdateRegion_Transaction extends jsTPS_Transaction {
     // opcodes: 0 - delete, 1 - add 
-    constructor(region, opcode, addfunc, delfunc, isTemp, regionExists) {
+    constructor(region, opcode, addfunc, delfunc, isTemp, regionExists, index) {
         super();
 		this.region = region;
         this.addFunction = addfunc;
@@ -14,6 +14,7 @@ export class UpdateRegion_Transaction extends jsTPS_Transaction {
         this.opcode = opcode;
         this.isTemp = isTemp;
         this.regionExists = regionExists;
+        this.index = index;
     }
     async doTransaction() {
 		let data;
@@ -57,8 +58,8 @@ export class UpdateRegion_Transaction extends jsTPS_Transaction {
             this.region._id = this._id;
         }
         //console.log(this.region);
-        this.opcode === 1 ? { data } = await this.deleteFunction({ variables: { _id: this.region._id }})
-                          : { data } = await this.addFunction({ variables: { region: this.region }});
+        this.opcode === 1 ? { data } = await this.deleteFunction({ variables: { _id: this.region._id}})
+                          : { data } = await this.addFunction({ variables: { region: this.region, index: this.index }});
         if(this.opcode === 1) {
             if (this.isTemp) {
                 this.region._id = data.tempDeleteRegion._id;

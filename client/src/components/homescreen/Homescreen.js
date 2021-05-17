@@ -197,7 +197,9 @@ const Homescreen = (props) => {
             owner: props.user._id
         }
         let opcode = 1;
-		let transaction = new UpdateRegion_Transaction(newRegion, opcode, AddRegion, DeleteRegion, false, false);
+        let isTemp = false;
+        let regionExists = false;
+		let transaction = new UpdateRegion_Transaction(newRegion, opcode, AddRegion, DeleteRegion, isTemp, regionExists);
 		props.tps.addTransaction(transaction);
 		tpsRedo();
     }
@@ -221,7 +223,7 @@ const Homescreen = (props) => {
 		tpsRedo();
 	}
 
-    const deleteSubregion = async (entry) => {
+    const deleteSubregion = async (entry, index) => {
         let cleanedSubregions = entry.subregions.map(entry => entry._id);
         let cleanedParentRegion = entry.parentRegion._id;
         let cleanedLandmarks = entry.landmarks.map(entry => entry._id);
@@ -239,7 +241,9 @@ const Homescreen = (props) => {
             owner: entry.owner
         }
         let opcode = 0;
-		let transaction = new UpdateRegion_Transaction(deletedRegion, opcode, TempAddRegion, TempDeleteRegion, true);
+        let isTemp = true;
+        let regionExists = false;
+		let transaction = new UpdateRegion_Transaction(deletedRegion, opcode, TempAddRegion, TempDeleteRegion, isTemp, regionExists, index);
 		props.tps.addTransaction(transaction);
 		tpsRedo();
     }

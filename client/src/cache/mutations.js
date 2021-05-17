@@ -47,8 +47,8 @@ export const ADD_REGION = gql`
 `;
 
 export const TEMP_ADD_REGION = gql`
-	mutation TempAddRegion($region: RegionInput!) {
-		tempAddRegion(region: $region)
+	mutation TempAddRegion($region: RegionInput!, $index: Int!) {
+		tempAddRegion(region: $region, index: $index)
 	}
 `;
 
