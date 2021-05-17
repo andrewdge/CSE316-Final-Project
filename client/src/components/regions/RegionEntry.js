@@ -272,7 +272,11 @@ const RegionEntry = (props) => {
                     <WCol size='3' style={{ display: 'flex'}}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '400px' }}>
                             <div style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}>
-                                {landmarks}
+                                <Link to={{ pathname: `/regionviewer/${props.entry._id}` }} onClick={props.clearTPS}>
+                                    <WButton wType='texted' color='success' hoverAnimation='darken' clickAnimation='ripple-light' >
+                                        {landmarks}
+                                    </WButton>
+                                </Link>
                             </div>
                         </div>
                     </WCol>
