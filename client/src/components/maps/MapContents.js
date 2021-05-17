@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MapList from './MapList';
 import { WCard, WCHeader, WCContent, WRow, WCol, WInput, WLayout, WLHeader, WLMain } from 'wt-frontend';
 import WButton from 'wt-frontend/build/components/wbutton/WButton';
 import world            from '../../images/world.png';
 import NavbarOptions from '../navbar/NavbarOptions';
+import { useParams, useLocation } from 'react-router-dom';
 
 const MapContents = (props) => {
 
     const [mapName, setMapName] = useState('');
+    let { _id } = useParams();
+    let location = useLocation();
 
     const handleCreateNewMap = () => {
         props.createNewMap(mapName);
@@ -18,6 +21,14 @@ const MapContents = (props) => {
         e.target.value='';
 		setMapName(value);
 	};
+
+    const getData = async () => {
+        await props.getMaps();
+    }
+
+    useEffect(() => {
+        getData();
+    }, [ _id, location.pathname]);
 
     return (
 

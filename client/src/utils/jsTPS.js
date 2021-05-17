@@ -6,43 +6,74 @@ export class jsTPS_Transaction {
 /*  Handles list name changes, or any other top level details of a todolist that may be added   */
 export class UpdateRegion_Transaction extends jsTPS_Transaction {
     // opcodes: 0 - delete, 1 - add 
-    constructor(region, opcode, addfunc, delfunc, regionExists) {
+    constructor(region, opcode, addfunc, delfunc, isTemp, regionExists) {
         super();
 		this.region = region;
         this.addFunction = addfunc;
         this.deleteFunction = delfunc;
         this.opcode = opcode;
+        this.isTemp = isTemp;
         this.regionExists = regionExists;
     }
     async doTransaction() {
 		let data;
-        if (this.regionExists) {
+        if (this.isTemp && this._idtmp) {
+            this.region._id = this._idtmp;
+        } 
+        if (!this.isTemp && this._id){
             this.region._id = this._id;
         }
+        //console.log(this.region);
         this.opcode === 0 ? { data } = await this.deleteFunction({ variables: { _id: this.region._id }})
 						  : { data } = await this.addFunction({ variables: { region: this.region, regionExists: this.regionExists }});
-        if(this.opcode !== 0) {
-            this.region._id = this._id = data.addRegion;
-        }
-        if (this.opcode === 0){
-            if (!localStorage.getItem(this.region._id)){
-                localStorage.setItem(this.region._id, JSON.stringify(this.region));
+        if(this.opcode === 1) {
+            if (this.isTemp) {
+                this.region._id = this._idtmp = data.tempAddRegion;
+            } else {
+                this.regionExists = true;
+                this.region._id = this._id = data.addRegion;
             }
         }
-        this.regionExists = true;
+        if (this.opcode === 0){
+            if (this.isTemp) {
+                if (!localStorage.getItem(this.region._id)){
+                    localStorage.setItem(this.region._id, JSON.stringify(this.region));
+                }
+            } else {
+                
+            }
+        }
+        //console.log('do ' + this.region._id);
 		return data;
     }
     // Since delete/add are opposites, flip matching opcode
+    //  opcodes: 0 - delete, 1 - add 
     async undoTransaction() {
 		let data;
+        if (this.isTemp && this._idtmp) {
+            this.region._id = this._idtmp;
+        }
+        if (!this.isTemp && this._id) {
+            this.region._id = this._id;
+        }
+        //console.log(this.region);
         this.opcode === 1 ? { data } = await this.deleteFunction({ variables: { _id: this.region._id }})
-                          : { data } = await this.addFunction({ variables: { region: this.region, regionExists: true }});
-        if(this.opcode !== 0) {
-            this.region._id = data.addRegion;
+                          : { data } = await this.addFunction({ variables: { region: this.region }});
+        if(this.opcode === 1) {
+            if (this.isTemp) {
+                this.region._id = data.tempDeleteRegion._id;
+            } else {
+                this.region._id = data.deleteRegion._id;
+            }
         }
         if (this.opcode === 0){
-            localStorage.removeItem(this.region._id);
+            if (this.isTemp) {
+                localStorage.removeItem(this.region._id);
+            } else {
+
+            }
         }
+        //console.log('undo ' + this.region._id);
 		return data;
     }
 }

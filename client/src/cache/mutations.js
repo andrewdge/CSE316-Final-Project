@@ -46,6 +46,12 @@ export const ADD_REGION = gql`
 	}
 `;
 
+export const TEMP_ADD_REGION = gql`
+	mutation TempAddRegion($region: RegionInput!) {
+		tempAddRegion(region: $region)
+	}
+`;
+
 export const UPDATE_REGION = gql`
 	mutation UpdateRegion($_id: String!, $field: String!, $value: String!) {
 		updateRegion(_id: $_id, field: $field, value: $value)
@@ -72,7 +78,18 @@ export const SORT_REGIONS_BY_CRITERIA = gql`
 
 export const DELETE_REGION = gql`
 	mutation DeleteRegion($_id: String!) {
-		deleteRegion(_id: $_id)
+		deleteRegion(_id: $_id) {
+			_id
+			name
+			capital
+			leader
+			flag
+			parentRegion
+			subregions
+			landmarks
+			sortId
+			owner
+		}
 	}
 `;
 

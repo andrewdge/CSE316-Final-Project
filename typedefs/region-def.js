@@ -65,11 +65,12 @@ const typeDefs = gql `
 		doesLandmarkExist(name: String!): Boolean
 	}
 	extend type Mutation {
-		addRegion(region: RegionInput!, regionExists: Boolean!): String
+		addRegion(region: RegionInput!, regionExists: Boolean): String
+		tempAddRegion(region: RegionInput!): String
 		updateRegion(_id: String!, field: String!, value: String!): String
 		sortRegionsByCriteria(_id: String!, isAscending: Boolean!, criteria: String!, doUndo: String!, subregions: [RegionInput]!): [Region]
 		tempDeleteRegion(_id: String!): Region
-		deleteRegion(_id: String!): Boolean
+		deleteRegion(_id: String!): Region
 		moveMapToTop(_id: String!): [Region]
 		addLandmark(landmark: LandmarkInput!, landmarkExists: Boolean!): String
 		updateLandmark(_id: String!, field: String!, value: String!): String

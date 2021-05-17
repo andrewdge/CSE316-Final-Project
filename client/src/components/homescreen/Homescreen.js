@@ -38,6 +38,7 @@ const Homescreen = (props) => {
     const [AddLandmark]                       = useMutation(mutations.ADD_LANDMARK);
     const [DeleteLandmark]                    = useMutation(mutations.DELETE_LANDMARK);
     const [UpdateLandmark]                    = useMutation(mutations.UPDATE_LANDMARK);
+    const [TempAddRegion]                     = useMutation(mutations.TEMP_ADD_REGION);
     
     
     let history = useHistory();
@@ -48,7 +49,7 @@ const Homescreen = (props) => {
 	// 	regions = GetDBRegions.data.getAllRegions;
 	// }
 
-    const {loading: mapsLoading, error: mapsError, data: mapsData, refetch: mapsRefetch} = useQuery(GET_DB_MAPS);
+    const [getMaps, {loading: mapsLoading, error: mapsError, data: mapsData, refetch: mapsRefetch}] = useLazyQuery(GET_DB_MAPS, {fetchPolicy: 'cache-and-network'});
 	// if(loading) { console.log('loading'); }
 	if(mapsError) { console.log(mapsError); }
 	if(mapsData) { 
@@ -122,7 +123,7 @@ const Homescreen = (props) => {
 
     const tpsUndo = async () => {
 		const retVal = await props.tps.undoTransaction();
-		refetchRegions();
+		await refetchRegions();
 		pollUndo();
 		pollRedo();
 		return retVal;
@@ -130,7 +131,7 @@ const Homescreen = (props) => {
 
 	const tpsRedo = async () => {
 		const retVal = await props.tps.doTransaction();
-		refetchRegions();
+		await refetchRegions();
 		pollUndo();
 		pollRedo();
 		return retVal;
@@ -196,7 +197,7 @@ const Homescreen = (props) => {
             owner: props.user._id
         }
         let opcode = 1;
-		let transaction = new UpdateRegion_Transaction(newRegion, opcode, AddRegion, DeleteRegion, false);
+		let transaction = new UpdateRegion_Transaction(newRegion, opcode, AddRegion, DeleteRegion, false, false);
 		props.tps.addTransaction(transaction);
 		tpsRedo();
     }
@@ -238,7 +239,7 @@ const Homescreen = (props) => {
             owner: entry.owner
         }
         let opcode = 0;
-		let transaction = new UpdateRegion_Transaction(deletedRegion, opcode, AddRegion, TempDeleteRegion);
+		let transaction = new UpdateRegion_Transaction(deletedRegion, opcode, TempAddRegion, TempDeleteRegion, true);
 		props.tps.addTransaction(transaction);
 		tpsRedo();
     }
@@ -285,9 +286,6 @@ const Homescreen = (props) => {
         props.tps.clearAllTransactions();
         pollUndo();
         pollRedo();
-        // Object.keys(localStorage).forEach( (region) => {
-        //     console.log(JSON.parse(localStorage.getItem(region)));
-        // });
         Object.keys(localStorage).forEach( async(region) => {
             DeleteRegion({ variables: { _id: region }});
         });
@@ -304,7 +302,7 @@ const Homescreen = (props) => {
                         <MapContents 
                             user={props.user} fetchUser={props.fetchUser} maps={maps} refetch={refetchMaps}
                             createNewMap={createNewMap} deleteMap={deleteMap} updateMapName={updateMapName} 
-                            bubbleMapToTop={bubbleMapToTop} auth={auth}
+                            bubbleMapToTop={bubbleMapToTop} auth={auth} getMaps={getMaps}
                         />
                     </Route>
                     <Route exact path='/updateaccount' name='updateaccount'>

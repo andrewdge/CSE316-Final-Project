@@ -10,7 +10,6 @@ const RegionSpreadsheet = (props) => {
 
 
     let { _id } = useParams();
-    let history = useHistory();
     let location = useLocation();
     let isMap = location.pathname.includes('maps');
 
@@ -21,7 +20,7 @@ const RegionSpreadsheet = (props) => {
     
     useEffect(() => {
         getData();
-    }, [props.subregions, _id, location.pathname]);
+    }, [props.activeRegion, location.pathname]);
 
 
     useEffect(() => {
@@ -97,6 +96,8 @@ const RegionSpreadsheet = (props) => {
         leaderToggleAscending(!isLeaderAscending);
         await props.refetchRegions();
     }
+
+    // if (props.activeRegion) console.log(props.activeRegion);
 
     return (
         <>

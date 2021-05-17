@@ -20,35 +20,21 @@ module.exports = {
             const { _id } = args;
             const objectId = new ObjectId(_id);
             let region = await (await Region.findOne({_id: objectId})).toJSON();
-            if (region) {
-                let subregions = await Promise.all(region.subregions.map( async (subregion) => {
-                    let sub = await (await Region.findOne({_id: subregion})).toJSON();
-                    if (sub) {
-                        let landmarks = await Promise.all(sub.landmarks.map( async (landmark) => {
-                            return await Landmark.findOne({_id: landmark });
-                        }));
-                        sub.landmarks = landmarks;
-                        let parent = await Region.findOne({_id: sub.parentRegion });
-                        if (parent) { 
-                            sub.parentRegion = parent;
-                        }
-                        return sub;
-                    }
-                    
-                }));
-                region.subregions = subregions;
-                if (region.parentRegion !== null){
-                    let parentRegion = await (await Region.findOne({_id: region.parentRegion })).toJSON();
-                    if (parentRegion) {
-                        region.parentRegion = parentRegion;
-                    }
-                }
-                let landmarks = await Promise.all(region.landmarks.map( async (landmark) => {
+            region.subregions = await Promise.all(region.subregions.map( async (subregion) => {
+                let sub = await (await Region.findOne({_id: subregion})).toJSON();
+                sub.landmarks = await Promise.all(sub.landmarks.map( async (landmark) => {
                     return await Landmark.findOne({_id: landmark });
                 }));
-                region.landmarks = landmarks;
-                if (region) return region;
+                sub.parentRegion = await Region.findOne({_id: sub.parentRegion });
+                return sub;
+            }));
+            if (region.parentRegion !== null){
+                region.parentRegion = await Region.findOne({_id: region.parentRegion });
             }
+            region.landmarks = await Promise.all(region.landmarks.map( async (landmark) => {
+                return await Landmark.findOne({_id: landmark });
+            }));
+            if (region) return region;
             return {};
         },
         getLineage: async ( _, args) => {
@@ -123,9 +109,9 @@ module.exports = {
     },
     Mutation: {
         addRegion: async ( _, args ) => {
-            const { region, regionExists } = args;
+            const { region , regionExists } = args;
             let objectId;
-            if (regionExists){
+            if (regionExists) {
                 objectId = new ObjectId(region._id);
             } else {
                 objectId = new ObjectId();
@@ -155,6 +141,19 @@ module.exports = {
                 return objectString;
             }
             else return '';
+        },
+        tempAddRegion: async ( _, args ) => {
+            const { region } = args;
+            const { _id, parentRegion } = region;
+            let objectId = new ObjectId(_id);
+            if (parentRegion !== null){
+                const parent = await Region.findOne({ _id: parentRegion});
+                const subregions = parent.subregions;
+                subregions.push(objectId);
+                const updated = await Region.updateOne({ _id: parentRegion }, {subregions: subregions});
+            }
+            const objectString = objectId.toString();
+            return objectString;
         },
         updateRegion: async ( _, args ) => {
             const { _id, field, value } = args; 
@@ -188,8 +187,9 @@ module.exports = {
                 await Region.updateOne({_id: region.parentRegion }, { subregions: subregions});
             }
             let deleted = await Region.findOne({ _id: objectId});
-            if (deleted) return region;
-            else return null;
+            console.log(deleted);
+            if (deleted) return deleted;
+            return null;
             
         },
         deleteRegion: async ( _, args ) => {
@@ -206,22 +206,24 @@ module.exports = {
 
             let recursiveDel = async (objectId) => {
                 const region = await Region.findOne({ _id: objectId});
-                const landmarks = region.landmarks;
-                landmarks.forEach( async(landmark) => {await Landmark.deleteOne({_id: landmark })});
-                const subregions = region.subregions;
-                if (!subregions){
-                    const del = await Region.deleteOne({_id: objectId});
-                    return del;
-                } else {
-                    const del = await Region.deleteOne({ _id: objectId});
-                    subregions.forEach( element => {
-                        recursiveDel(element);
-                    });
+                if (region) {
+                    const landmarks = region.landmarks;
+                    landmarks.forEach( async(landmark) => {await Landmark.deleteOne({_id: landmark })});
+                    const subregions = region.subregions;
+                    if (!subregions){
+                        const del = await Region.deleteOne({_id: objectId});
+                        return del;
+                    } else {
+                        const del = await Region.deleteOne({ _id: objectId});
+                        subregions.forEach( element => {
+                            recursiveDel(element);
+                        });
+                    }
                 }
             };
             let deleted = recursiveDel(objectId);
-            if (deleted) return true;
-            else return false;
+            if (deleted) return region;
+            else return null;
             
         },
         moveMapToTop: async ( _, args) => {
