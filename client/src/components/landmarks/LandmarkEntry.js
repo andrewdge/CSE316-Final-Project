@@ -31,7 +31,7 @@ const LandmarkEntry = (props) => {
         <>
             <WRow style={{ height: '40px', width: '100%', display: 'flex'}}>
                 {
-                    props.canDelete ?
+                    props.canEdit ?
                         <WButton size='small' style={{ color: 'red', backgroundColor: 'black' }} onClick={handleShowDelete} shape='rounded' hoverAnimation='darken' clickAnimation='ripple-light'>
                             <i className='material-icons'>clear</i>
                         </WButton>
@@ -41,17 +41,22 @@ const LandmarkEntry = (props) => {
                 
                 <div style={{ color: 'lightgrey', fontSize: '1.125rem', marginLeft: '30px', display: 'flex', alignItems: 'center' }}>
                     {
-                        editingName
-                            ? <WInput
-                                className='landmark-input' onBlur={handleNameEdit}
-                                autoFocus={true} defaultValue={name} type='text'
-                                wType="outlined" inputClass="landmark-input-class"
-                            />
-                            : <div className="table-text"
-                                onClick={() => toggleNameEdit(!editingName)}
-                            >{name}
-                            </div>
+                        props.canEdit ?
+                            (editingName
+                                ? <WInput
+                                    className='landmark-input' onBlur={handleNameEdit}
+                                    autoFocus={true} defaultValue={name} type='text'
+                                    wType="outlined" inputClass="landmark-input-class"
+                                />
+                                : <div className="table-text"
+                                    onClick={() => toggleNameEdit(!editingName)}
+                                >{name}
+                                </div>
+                            )
+                            :
+                            <div className="table-text-noedit">{name}</div>
                     }
+                    
                     {props.entry.location && 
                         <div style={{ marginLeft: '10px', marginRight: '10px' }}>
                         {`  - `}

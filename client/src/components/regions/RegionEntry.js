@@ -275,7 +275,6 @@ const RegionEntry = (props) => {
                                 {landmarks}
                             </div>
                         </div>
-                        
                     </WCol>
                 </WRow>
             </WCard>

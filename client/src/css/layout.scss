@@ -125,6 +125,15 @@ html {
     cursor: pointer;
 }
 
+.table-text-noedit {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 1.125rem;
+    padding-bottom: 12px;
+    padding-top: 12px;
+}
+
 .table-entry-buttons {
     padding: 0;
     margin-left: 18px;

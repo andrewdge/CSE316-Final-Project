@@ -240,12 +240,12 @@ const RegionViewer = (props) => {
                                             <>
                                                 {props.activeRegion.landmarks.map( (entry, index) => (
                                                     <LandmarkEntry key={entry._id} entry={entry} index={index} deleteLandmark={props.deleteLandmark}
-                                                    editLandmark={props.editLandmark} canDelete={true}
+                                                    editLandmark={props.editLandmark} canEdit={true}
                                                     />
                                                 ))}
                                                 {props.landmarks.map( (entry, index) => (
                                                     <LandmarkEntry key={entry._id} entry={entry} index={index} deleteLandmark={props.deleteLandmark}
-                                                    editLandmark={props.editLandmark} canDelete={false}
+                                                    editLandmark={() => {}} canEdit={false}
                                                     />
                                                 ))}
                                             </>
