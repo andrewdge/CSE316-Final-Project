@@ -266,7 +266,7 @@ const RegionEntry = (props) => {
                         <img style={{ maxHeight: '50px'}} src={imageAddr} alt='No Flag :('></img>
                     </WCol>
                     <WCol size='3' style={{ display: 'flex'}}>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '400px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '340px' }}>
                             <div style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}>
                                 <Link to={{ pathname: `/regionviewer/${props.entry._id}` }} onClick={props.clearTPS}>
                                     <WButton wType='texted' color='success' hoverAnimation='darken' clickAnimation='ripple-light' >
