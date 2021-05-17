@@ -63,7 +63,15 @@ const RegionSpreadsheet = (props) => {
     const [isNameAscending, nameToggleAscending] = useState(false);
     const [isCapitalAscending, capitalToggleAscending] = useState(false);
     const [isLeaderAscending, leaderToggleAscending] = useState(false);
-    let imageAddr = props.lineage.map(reg => reg.name).join('/');
+    let imageAddr;
+    if (props.lineage) {
+        imageAddr = props.lineage.map(reg => reg.name).join('/');
+    }
+
+    let hasSubregions;
+    if (props.activeRegion) {
+        hasSubregions = props.activeRegion.subregions.length > 0;
+    }
     
     
     
@@ -151,18 +159,41 @@ const RegionSpreadsheet = (props) => {
 
                                         </WCol>
                                         <WCol size='2' className='header-title'>
-                                            <WButton wType='texted' className='header-title' onClick={nameReorder} hoverAnimation='darken' clickAnimation='ripple-light' >
-                                                Name
-                                            </WButton>
+                                            {
+                                                hasSubregions ?
+                                                <WButton wType='texted' className='header-title' onClick={nameReorder} hoverAnimation='darken' clickAnimation='ripple-light' >
+                                                    Name
+                                                </WButton>
+                                                :
+                                                <div className='header-title'>
+                                                    Name
+                                                </div>
+                                            }
+                                            
                                         </WCol>
                                         <WCol size='2' className='header-title'>
-                                            <WButton wType='texted' className='header-title' onClick={capitalReorder} hoverAnimation='darken' clickAnimation='ripple-light' >
-                                                Capital
-                                            </WButton>
+                                            {
+                                                hasSubregions ?
+                                                <WButton wType='texted' className='header-title' onClick={capitalReorder} hoverAnimation='darken' clickAnimation='ripple-light' >
+                                                    Capital
+                                                </WButton>
+                                                :
+                                                <div className='header-title'>
+                                                    Capital
+                                                </div>
+                                            }
+                                            
                                         </WCol><WCol size='2' className='header-title'>
-                                            <WButton wType='texted' className='header-title' onClick={leaderReorder} hoverAnimation='darken' clickAnimation='ripple-light' >
-                                                Leader
-                                            </WButton>
+                                            {
+                                                hasSubregions ?
+                                                <WButton wType='texted' className='header-title' onClick={leaderReorder} hoverAnimation='darken' clickAnimation='ripple-light' >
+                                                    Leader
+                                                </WButton>
+                                                :
+                                                <div className='header-title'>
+                                                    Leader
+                                                </div>
+                                            }
                                         </WCol><WCol size='2' className='header-title'>
                                             Flag
                                         </WCol><WCol size='3' className='header-title'>
