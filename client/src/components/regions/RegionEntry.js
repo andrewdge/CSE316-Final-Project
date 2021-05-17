@@ -178,10 +178,6 @@ const RegionEntry = (props) => {
         }
     }, [editingName, editingCapital, editingLeader]);
 
-    // console.log(props.row);
-    // console.log(props.col);
-
-
     const history = useHistory();
 
     const deleteSubregion = async () =>{
